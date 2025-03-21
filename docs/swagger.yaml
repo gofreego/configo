@@ -39,6 +39,13 @@ definitions:
     - CONFIG_TYPE_CHOICE
     - CONFIG_TYPE_PARENT
     - CONFIG_TYPE_LIST
+  configo.UpdateConfigRequest:
+    properties:
+      key:
+        type: string
+      value:
+        $ref: '#/definitions/configo.ConfigObject'
+    type: object
   configo.configMetadata:
     properties:
       keys:
@@ -70,7 +77,7 @@ paths:
         name: config
         required: true
         schema:
-          $ref: '#/definitions/configo.ConfigObject'
+          $ref: '#/definitions/configo.UpdateConfigRequest'
       produces:
       - application/json
       responses:

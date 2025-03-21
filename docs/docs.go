@@ -44,7 +44,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/configo.ConfigObject"
+                            "$ref": "#/definitions/configo.UpdateConfigRequest"
                         }
                     }
                 ],
@@ -206,6 +206,17 @@ const docTemplate = `{
                 "CONFIG_TYPE_PARENT",
                 "CONFIG_TYPE_LIST"
             ]
+        },
+        "configo.UpdateConfigRequest": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "value": {
+                    "$ref": "#/definitions/configo.ConfigObject"
+                }
+            }
         },
         "configo.configMetadata": {
             "type": "object",

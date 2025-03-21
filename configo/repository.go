@@ -2,10 +2,8 @@ package configo
 
 import (
 	"context"
-	"net/http"
 	"time"
 
-	"github.com/gofreego/goutils/customerrors"
 	"github.com/gofreego/goutils/logger"
 )
 
@@ -14,12 +12,12 @@ func (manager *configo) saveConfig(ctx context.Context, cfg *Config) error {
 
 	if err := manager.cache.SetWithTimeout(ctx, cfg.Key, cfg, time.Minute*time.Duration(manager.config.CacheTimeoutMinutes)); err != nil {
 		logger.Error(ctx, "failed to save config in cache: %v", err)
-		return customerrors.New(http.StatusInternalServerError, "failed to save config in cache, Err: %v", err)
+		return NewInternalServerErr("failed to save config in cache, Err: %v", err)
 	}
 
 	if err := manager.repository.SaveConfig(ctx, cfg); err != nil {
 		logger.Error(ctx, "failed to save config in repository: %v", err)
-		return err
+		return NewInternalServerErr("failed to save config in repository, Err: %v", err)
 	}
 	return nil
 }
@@ -30,7 +28,7 @@ func (manager *configo) getConfig(ctx context.Context, key string) (*Config, err
 	err := manager.cache.GetV(ctx, key, &cfg)
 	if err != nil {
 		logger.Error(ctx, "failed to get config from cache: %v", err)
-		return nil, customerrors.New(http.StatusInternalServerError, "failed to get config from cache, Err: %v", err)
+		return nil, NewInternalServerErr("failed to get config from cache, Err: %v", err)
 	}
 	if cfg.Key != "" {
 		return &cfg, nil
@@ -39,7 +37,7 @@ func (manager *configo) getConfig(ctx context.Context, key string) (*Config, err
 	repoCfg, err := manager.repository.GetConfig(ctx, key)
 	if err != nil {
 		logger.Error(ctx, "failed to get config from repository: %v", err)
-		return nil, customerrors.New(http.StatusInternalServerError, "failed to get config from repository, Err: %v", err)
+		return nil, NewInternalServerErr("failed to get config from repository, Err: %v", err)
 	}
 	if repoCfg == nil {
 		return nil, ErrConfigNotFound
@@ -47,7 +45,7 @@ func (manager *configo) getConfig(ctx context.Context, key string) (*Config, err
 
 	if err := manager.cache.SetWithTimeout(ctx, key, repoCfg, time.Minute*time.Duration(manager.config.CacheTimeoutMinutes)); err != nil {
 		logger.Error(ctx, "failed to save config in cache: %v", err)
-		return nil, customerrors.New(http.StatusInternalServerError, "failed to save config in cache, Err: %v", err)
+		return nil, NewInternalServerErr("failed to save config in cache, Err: %v", err)
 	}
 	return repoCfg, nil
 }

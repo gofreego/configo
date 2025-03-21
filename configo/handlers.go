@@ -57,7 +57,7 @@ func (c *configo) handleGetConfig(w http.ResponseWriter, r *http.Request) {
 // @Tags Config
 // @Accept json
 // @Produce json
-// @Param config body ConfigObject true "config object"
+// @Param config body UpdateConfigRequest true "config object"
 // @Success 200 {string} string "config saved successfully"
 // @Failure 400 {object} any
 // @Router /configs/config [post]
