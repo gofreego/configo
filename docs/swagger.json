@@ -1,0 +1,214 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This API is for demonstration purposes only.",
+        "title": "Config Manager APIs",
+        "termsOfService": "http://github.com/gofreego/configo/readme.md",
+        "contact": {
+            "name": "Developers",
+            "url": "http://www.github.com/gofreego",
+            "email": "pavanyewale1996@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/configs/config": {
+            "post": {
+                "description": "Save config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Save config",
+                "parameters": [
+                    {
+                        "description": "config object",
+                        "name": "config",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/configo.ConfigObject"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "config saved successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/configs/config/{key}": {
+            "get": {
+                "description": "Get config by key",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "config key",
+                        "name": "key",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/configo.ConfigObject"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/configs/metadata": {
+            "get": {
+                "description": "Get all config keys",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get all config keys",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/configo.configMetadata"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/configs/ui": {
+            "get": {
+                "description": "UI",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "text/html"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "UI",
+                "responses": {
+                    "200": {
+                        "description": "UI",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "configo.ConfigObject": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/configo.ConfigObject"
+                    }
+                },
+                "choices": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "required": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "$ref": "#/definitions/configo.ConfigType"
+                },
+                "value": {}
+            }
+        },
+        "configo.ConfigType": {
+            "type": "string",
+            "enum": [
+                "string",
+                "number",
+                "boolean",
+                "json",
+                "big_text",
+                "choice",
+                "parent",
+                "list"
+            ],
+            "x-enum-varnames": [
+                "CONFIG_TYPE_STRING",
+                "CONFIG_TYPE_NUMBER",
+                "CONFIG_TYPE_BOOLEAN",
+                "CONFIG_TYPE_JSON",
+                "CONFIG_TYPE_BIG_TEXT",
+                "CONFIG_TYPE_CHOICE",
+                "CONFIG_TYPE_PARENT",
+                "CONFIG_TYPE_LIST"
+            ]
+        },
+        "configo.configMetadata": {
+            "type": "object",
+            "properties": {
+                "keys": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

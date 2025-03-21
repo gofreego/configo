@@ -1,0 +1,147 @@
+definitions:
+  configo.ConfigObject:
+    properties:
+      children:
+        items:
+          $ref: '#/definitions/configo.ConfigObject'
+        type: array
+      choices:
+        items:
+          type: string
+        type: array
+      description:
+        type: string
+      name:
+        type: string
+      required:
+        type: boolean
+      type:
+        $ref: '#/definitions/configo.ConfigType'
+      value: {}
+    type: object
+  configo.ConfigType:
+    enum:
+    - string
+    - number
+    - boolean
+    - json
+    - big_text
+    - choice
+    - parent
+    - list
+    type: string
+    x-enum-varnames:
+    - CONFIG_TYPE_STRING
+    - CONFIG_TYPE_NUMBER
+    - CONFIG_TYPE_BOOLEAN
+    - CONFIG_TYPE_JSON
+    - CONFIG_TYPE_BIG_TEXT
+    - CONFIG_TYPE_CHOICE
+    - CONFIG_TYPE_PARENT
+    - CONFIG_TYPE_LIST
+  configo.configMetadata:
+    properties:
+      keys:
+        items:
+          type: string
+        type: array
+    type: object
+info:
+  contact:
+    email: pavanyewale1996@gmail.com
+    name: Developers
+    url: http://www.github.com/gofreego
+  description: This API is for demonstration purposes only.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://github.com/gofreego/configo/readme.md
+  title: Config Manager APIs
+  version: "1.0"
+paths:
+  /configs/config:
+    post:
+      consumes:
+      - application/json
+      description: Save config
+      parameters:
+      - description: config object
+        in: body
+        name: config
+        required: true
+        schema:
+          $ref: '#/definitions/configo.ConfigObject'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: config saved successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Save config
+      tags:
+      - Config
+  /configs/config/{key}:
+    get:
+      consumes:
+      - application/json
+      description: Get config by key
+      parameters:
+      - description: config key
+        in: query
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/configo.ConfigObject'
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Get config
+      tags:
+      - Config
+  /configs/metadata:
+    get:
+      consumes:
+      - application/json
+      description: Get all config keys
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/configo.configMetadata'
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Get all config keys
+      tags:
+      - Config
+  /configs/ui:
+    get:
+      consumes:
+      - application/json
+      description: UI
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: UI
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: UI
+      tags:
+      - Config
+swagger: "2.0"
