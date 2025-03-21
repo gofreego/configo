@@ -8,7 +8,7 @@ import (
 	"github.com/gofreego/goutils/logger"
 )
 
-func (manager *configo) updateConfig(ctx context.Context, req *UpdateConfigRequest) error {
+func (manager *configManagerImpl) updateConfig(ctx context.Context, req *UpdateConfigRequest) error {
 
 	if manager.registeredConfigs[req.Key] == nil {
 		logger.Error(ctx, "config not registered: %v", req.Key)
@@ -31,7 +31,7 @@ func (manager *configo) updateConfig(ctx context.Context, req *UpdateConfigReque
 	return manager.saveConfig(ctx, config)
 }
 
-func (manager *configo) getConfigByKey(ctx context.Context, key string) (*ConfigObject, error) {
+func (manager *configManagerImpl) getConfigByKey(ctx context.Context, key string) (*ConfigObject, error) {
 	config, err := manager.getConfig(ctx, key)
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func (manager *configo) getConfigByKey(ctx context.Context, key string) (*Config
 	return &obj, nil
 }
 
-func (manager *configo) getConfigsMetadata(_ context.Context) (*configMetadata, error) {
+func (manager *configManagerImpl) getConfigsMetadata(_ context.Context) (*configMetadata, error) {
 	keys := make([]string, 0, len(manager.registeredConfigs))
 	for k := range manager.registeredConfigs {
 		keys = append(keys, k)

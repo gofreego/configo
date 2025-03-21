@@ -10,7 +10,7 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-func (c *configo) handleSwagger(w http.ResponseWriter, r *http.Request) {
+func (c *configManagerImpl) handleSwagger(w http.ResponseWriter, r *http.Request) {
 	httpSwagger.Handler()(w, r)
 }
 
@@ -23,7 +23,7 @@ func (c *configo) handleSwagger(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {string} string "UI"
 // @Failure 400 {object} any
 // @Router /configs/ui [get]
-func (c *configo) handleUI(w http.ResponseWriter, r *http.Request) {
+func (c *configManagerImpl) handleUI(w http.ResponseWriter, r *http.Request) {
 	response.WriteErrorV2(r.Context(), w, customerrors.BAD_REQUEST_ERROR("not implemented"))
 }
 
@@ -37,7 +37,7 @@ func (c *configo) handleUI(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} ConfigObject
 // @Failure 400 {object} any
 // @Router /configs/config/{key} [get]
-func (c *configo) handleGetConfig(w http.ResponseWriter, r *http.Request) {
+func (c *configManagerImpl) handleGetConfig(w http.ResponseWriter, r *http.Request) {
 	key := r.URL.Query().Get("key")
 	if key == "" {
 		response.WriteErrorV2(r.Context(), w, customerrors.BAD_REQUEST_ERROR("key is required in query params"))
@@ -61,7 +61,7 @@ func (c *configo) handleGetConfig(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {string} string "config saved successfully"
 // @Failure 400 {object} any
 // @Router /configs/config [post]
-func (c *configo) handleSaveConfig(w http.ResponseWriter, r *http.Request) {
+func (c *configManagerImpl) handleSaveConfig(w http.ResponseWriter, r *http.Request) {
 	var cfgUpdateRequest UpdateConfigRequest
 	err := json.NewDecoder(r.Body).Decode(&cfgUpdateRequest)
 	if err != nil {
@@ -95,7 +95,7 @@ type configMetadata struct {
 // @Success 200 {object} configMetadata
 // @Failure 400 {object} any
 // @Router /configs/metadata [get]
-func (c *configo) handleGetConfigMetadata(w http.ResponseWriter, r *http.Request) {
+func (c *configManagerImpl) handleGetConfigMetadata(w http.ResponseWriter, r *http.Request) {
 	metadata, err := c.getConfigsMetadata(r.Context())
 	if err != nil {
 		response.WriteErrorV2(r.Context(), w, err)

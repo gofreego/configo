@@ -11,16 +11,16 @@ import (
 
 type registeredConfigsMap map[string]config
 
-type configo struct {
+type configManagerImpl struct {
 	repository        Repository
 	cache             cache.Cache
 	config            *ConfigManagerConfig
 	registeredConfigs registeredConfigsMap
 }
 
-func newconfigo(ctx context.Context, cfg *ConfigManagerConfig, repository Repository) (*configo, error) {
+func newconfigo(ctx context.Context, cfg *ConfigManagerConfig, repository Repository) (*configManagerImpl, error) {
 	cfg.withDefault()
-	manager := &configo{
+	manager := &configManagerImpl{
 		repository:        repository,
 		cache:             memory.NewCache(),
 		config:            cfg,
@@ -35,7 +35,7 @@ func newconfigo(ctx context.Context, cfg *ConfigManagerConfig, repository Reposi
 }
 
 // RegisterConfig will register config and setup a UI for it. It will also validate the config.
-func (manager *configo) RegisterConfig(ctx context.Context, cfg config) error {
+func (manager *configManagerImpl) RegisterConfig(ctx context.Context, cfg config) error {
 	// validate config
 	cfgStr, err := marshal(ctx, cfg)
 	if err != nil {
@@ -67,7 +67,7 @@ func (manager *configo) RegisterConfig(ctx context.Context, cfg config) error {
 	return nil
 }
 
-func (manager *configo) Get(ctx context.Context, cfg config) error {
+func (manager *configManagerImpl) Get(ctx context.Context, cfg config) error {
 	dbCfg, err := manager.getConfig(ctx, cfg.Key())
 	if err != nil {
 		return err
@@ -77,7 +77,7 @@ func (manager *configo) Get(ctx context.Context, cfg config) error {
 
 // RegisterRoute registers routes for the configuration manager.
 // register routes with /configs/* endpoints
-func (c *configo) RegisterRoute(ctx context.Context, registerFunc RouteRegistrar) error {
+func (c *configManagerImpl) RegisterRoute(ctx context.Context, registerFunc RouteRegistrar) error {
 
 	//setup swagger
 	if err := registerFunc(http.MethodGet, "/configs/swagger/*any", c.handleSwagger); err != nil {

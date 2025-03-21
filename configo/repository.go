@@ -8,7 +8,7 @@ import (
 )
 
 // saveConfig saves/update the config in cache and repository
-func (manager *configo) saveConfig(ctx context.Context, cfg *Config) error {
+func (manager *configManagerImpl) saveConfig(ctx context.Context, cfg *Config) error {
 
 	if err := manager.cache.SetWithTimeout(ctx, cfg.Key, cfg, time.Minute*time.Duration(manager.config.CacheTimeoutMinutes)); err != nil {
 		logger.Error(ctx, "failed to save config in cache: %v", err)
@@ -23,7 +23,7 @@ func (manager *configo) saveConfig(ctx context.Context, cfg *Config) error {
 }
 
 // getConfig gets the config from cache or repository. returns ErrConfigNotFound if config is not found
-func (manager *configo) getConfig(ctx context.Context, key string) (*Config, error) {
+func (manager *configManagerImpl) getConfig(ctx context.Context, key string) (*Config, error) {
 	var cfg Config
 	err := manager.cache.GetV(ctx, key, &cfg)
 	if err != nil {
@@ -50,6 +50,6 @@ func (manager *configo) getConfig(ctx context.Context, key string) (*Config, err
 	return repoCfg, nil
 }
 
-func (manager *configo) addConfigToMap(_ context.Context, cfg config) {
+func (manager *configManagerImpl) addConfigToMap(_ context.Context, cfg config) {
 	manager.registeredConfigs[cfg.Key()] = cfg
 }

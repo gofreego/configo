@@ -95,7 +95,7 @@ type ConfigManager interface {
 	Get(ctx context.Context, cfg config) error
 }
 
-func New(ctx context.Context, cfg *ConfigManagerConfig, repo Repository) (ConfigManager, error) {
+func NewConfigManager(ctx context.Context, cfg *ConfigManagerConfig, repo Repository) (ConfigManager, error) {
 	if cfg == nil {
 		cfg = &ConfigManagerConfig{}
 	}
