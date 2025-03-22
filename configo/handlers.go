@@ -111,12 +111,6 @@ func (c *configManagerImpl) handleSaveConfig(w http.ResponseWriter, r *http.Requ
 	response.WriteSuccessV2(r.Context(), w, "config saved successfully")
 }
 
-type configMetadataResponse struct {
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	Keys        []string `json:"keys"`
-}
-
 // Swagger doc
 // @Summary Get all config keys
 // @Description Get all config keys
