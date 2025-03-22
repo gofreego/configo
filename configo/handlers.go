@@ -2,6 +2,7 @@ package configo
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	_ "github.com/gofreego/configo/docs"
@@ -24,7 +25,31 @@ func (c *configManagerImpl) handleSwagger(w http.ResponseWriter, r *http.Request
 // @Failure 400 {object} any
 // @Router /configs/ui [get]
 func (c *configManagerImpl) handleUI(w http.ResponseWriter, r *http.Request) {
-	response.WriteErrorV2(r.Context(), w, customerrors.BAD_REQUEST_ERROR("not implemented"))
+	html := `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Form</title>
+</head>
+<body>
+    <h2>Sample Form</h2>
+    <form action="/submit" method="post">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <br><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <br><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
+
+	`
+	w.Header().Set("Content-Type", "text/html")
+	fmt.Fprint(w, html)
 }
 
 // Swagger doc
@@ -82,8 +107,10 @@ func (c *configManagerImpl) handleSaveConfig(w http.ResponseWriter, r *http.Requ
 	response.WriteSuccessV2(r.Context(), w, "config saved successfully")
 }
 
-type configMetadata struct {
-	Keys []string `json:"keys"`
+type configMetadataResponse struct {
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Keys        []string `json:"keys"`
 }
 
 // Swagger doc

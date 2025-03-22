@@ -70,6 +70,7 @@ type config interface {
 
 type ConfigManagerConfig struct {
 	ServiceName         string `name:"service_name" type:"string" description:"service name" required:"true"`
+	ServiceDescription  string `name:"service_description" type:"string" description:"service description" required:"false"`
 	CacheTimeoutMinutes int    `name:"cache_timeout_minutes" type:"number" description:"cache timeout in minutes for config manager" required:"true"`
 }
 

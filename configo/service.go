@@ -15,9 +15,10 @@ func (manager *configManagerImpl) updateConfig(ctx context.Context, req *UpdateC
 		return ErrConfigNotFound
 	}
 
-	config, err := manager.getConfig(ctx, req.Key)
+	config, err := manager.repository.GetConfig(ctx, req.Key)
 	if err != nil {
-		return err
+		logger.Error(ctx, "failed to get config: %v", err)
+		return NewInternalServerErr("failed to get config, Err: %v", err)
 	}
 
 	config.UpdatedAt = time.Now().UnixMilli()
@@ -28,13 +29,23 @@ func (manager *configManagerImpl) updateConfig(ctx context.Context, req *UpdateC
 		return ErrInvalidConfig
 	}
 	config.Value = string(bytes)
-	return manager.saveConfig(ctx, config)
+	err = manager.repository.SaveConfig(ctx, config)
+	if err != nil {
+		logger.Error(ctx, "failed to save config: %v", err)
+		return NewInternalServerErr("failed to save config, Err: %v", err)
+	}
+	return nil
 }
 
 func (manager *configManagerImpl) getConfigByKey(ctx context.Context, key string) (*ConfigObject, error) {
-	config, err := manager.getConfig(ctx, key)
+	config, err := manager.repository.GetConfig(ctx, key)
 	if err != nil {
-		return nil, err
+		logger.Error(ctx, "failed to get config: %v", err)
+		return nil, NewInternalServerErr("failed to get config, Err: %v", err)
+	}
+	if config == nil {
+		logger.Error(ctx, "config not found: %v", key)
+		return nil, ErrConfigNotFound
 	}
 	var obj ConfigObject
 	err = json.Unmarshal([]byte(config.Value), &obj)
@@ -42,13 +53,22 @@ func (manager *configManagerImpl) getConfigByKey(ctx context.Context, key string
 		logger.Error(ctx, "failed to unmarshal config: %v", err)
 		return nil, ErrInvalidConfig
 	}
+
 	return &obj, nil
 }
 
-func (manager *configManagerImpl) getConfigsMetadata(_ context.Context) (*configMetadata, error) {
+func (manager *configManagerImpl) getConfigsMetadata(_ context.Context) (*configMetadataResponse, error) {
 	keys := make([]string, 0, len(manager.registeredConfigs))
 	for k := range manager.registeredConfigs {
 		keys = append(keys, k)
 	}
-	return &configMetadata{Keys: keys}, nil
+	return &configMetadataResponse{
+		Keys:        keys,
+		Name:        manager.config.ServiceName,
+		Description: manager.config.ServiceDescription,
+	}, nil
+}
+
+func (manager *configManagerImpl) addConfigToMap(_ context.Context, cfg config) {
+	manager.registeredConfigs[cfg.Key()] = cfg
 }
