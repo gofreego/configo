@@ -1,4 +1,5 @@
-# configo
+
+![Configo Logo](assets/logo-name.png)
 
 configo is a library in Golang to maintain configurations in a repository. It provides a way to manage configurations with caching and repository support, along with a RESTful API for configuration management.
 
