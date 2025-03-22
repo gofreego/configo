@@ -50,7 +50,7 @@ func (r *Repo) GetConfig(ctx context.Context, key string) (*configo.Config, erro
 	return &cfg, nil
 }
 
-func getRegistar(router *gin.Engine) configo.RouteRegistrar {
+func getRegistar(router gin.IRouter) configo.RouteRegistrar {
 	return func(method, path string, handler http.HandlerFunc) error {
 		ginHandler := func(c *gin.Context) {
 			handler(c.Writer, c.Request)
@@ -68,8 +68,8 @@ func main() {
 	}
 
 	router := gin.New()
-
-	err = configo.RegisterRoute(ctx, getRegistar(router))
+	group := router.Group("/myservice")
+	err = configo.RegisterRoute(ctx, getRegistar(group))
 	if err != nil {
 		panic(err)
 	}

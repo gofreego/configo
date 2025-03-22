@@ -3,8 +3,9 @@ package configo
 import (
 	"embed"
 	"encoding/json"
+	"fmt"
 	"net/http"
-	"path"
+	"strings"
 
 	_ "github.com/gofreego/configo/docs"
 	"github.com/gofreego/goutils/customerrors"
@@ -30,7 +31,13 @@ func (c *configManagerImpl) handleSwagger(w http.ResponseWriter, r *http.Request
 // @Router /configo/web/*any [get]
 func (c *configManagerImpl) handleUI(w http.ResponseWriter, r *http.Request) {
 	// Ensure the path is correct (handle root path and default file)
-	filePath := path.Clean(r.URL.Path[len("/configo/web"):])
+	path := strings.Split(r.URL.Path, "/configo/web")
+	if len(path) < 2 {
+		http.NotFound(w, r)
+		return
+	}
+	endpoint := path[0] + "/configo/web/"
+	filePath := path[1]
 	if filePath == "" || filePath == "/" {
 		filePath = "/index.html"
 	}
@@ -41,7 +48,9 @@ func (c *configManagerImpl) handleUI(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-
+	if filePath == "/index.html" {
+		data = []byte(strings.Replace(string(data), `<base href="/">`, fmt.Sprintf(`<base href="%s">`, endpoint), 1))
+	}
 	// Determine content type and serve the file
 	w.Header().Set("Content-Type", getContentType(filePath))
 	w.Write(data)
