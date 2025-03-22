@@ -1,15 +1,19 @@
 package configo
 
 import (
+	"embed"
 	"encoding/json"
-	"fmt"
 	"net/http"
+	"path"
 
 	_ "github.com/gofreego/configo/docs"
 	"github.com/gofreego/goutils/customerrors"
 	"github.com/gofreego/goutils/response"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
+
+//go:embed static/*
+var content embed.FS
 
 func (c *configManagerImpl) handleSwagger(w http.ResponseWriter, r *http.Request) {
 	httpSwagger.Handler()(w, r)
@@ -23,33 +27,24 @@ func (c *configManagerImpl) handleSwagger(w http.ResponseWriter, r *http.Request
 // @Produce html
 // @Success 200 {string} string "UI"
 // @Failure 400 {object} any
-// @Router /configs/ui [get]
+// @Router /configo/web/*any [get]
 func (c *configManagerImpl) handleUI(w http.ResponseWriter, r *http.Request) {
-	html := `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Form</title>
-</head>
-<body>
-    <h2>Sample Form</h2>
-    <form action="/submit" method="post">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
-        <br><br>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        <br><br>
-        <input type="submit" value="Submit">
-    </form>
-</body>
-</html>
+	// Ensure the path is correct (handle root path and default file)
+	filePath := path.Clean(r.URL.Path[len("/configo/web"):])
+	if filePath == "" || filePath == "/" {
+		filePath = "/index.html"
+	}
 
-	`
-	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprint(w, html)
+	// Open the requested file from embedded FS
+	data, err := content.ReadFile("static" + filePath)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	// Determine content type and serve the file
+	w.Header().Set("Content-Type", getContentType(filePath))
+	w.Write(data)
 }
 
 // Swagger doc
@@ -61,7 +56,7 @@ func (c *configManagerImpl) handleUI(w http.ResponseWriter, r *http.Request) {
 // @Param key query string true "config key"
 // @Success 200 {object} ConfigObject
 // @Failure 400 {object} any
-// @Router /configs/config/{key} [get]
+// @Router /configs/confio/{key} [get]
 func (c *configManagerImpl) handleGetConfig(w http.ResponseWriter, r *http.Request) {
 	key := r.URL.Query().Get("key")
 	if key == "" {
@@ -85,7 +80,7 @@ func (c *configManagerImpl) handleGetConfig(w http.ResponseWriter, r *http.Reque
 // @Param config body UpdateConfigRequest true "config object"
 // @Success 200 {string} string "config saved successfully"
 // @Failure 400 {object} any
-// @Router /configs/config [post]
+// @Router /configo/config [post]
 func (c *configManagerImpl) handleSaveConfig(w http.ResponseWriter, r *http.Request) {
 	var cfgUpdateRequest UpdateConfigRequest
 	err := json.NewDecoder(r.Body).Decode(&cfgUpdateRequest)
@@ -121,7 +116,7 @@ type configMetadataResponse struct {
 // @Produce json
 // @Success 200 {object} configMetadata
 // @Failure 400 {object} any
-// @Router /configs/metadata [get]
+// @Router /configo/metadata [get]
 func (c *configManagerImpl) handleGetConfigMetadata(w http.ResponseWriter, r *http.Request) {
 	metadata, err := c.getConfigsMetadata(r.Context())
 	if err != nil {

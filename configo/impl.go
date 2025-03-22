@@ -14,7 +14,7 @@ type configManagerImpl struct {
 	registeredConfigs registeredConfigsMap
 }
 
-func newconfigo(ctx context.Context, cfg *ConfigManagerConfig, repository Repository) (*configManagerImpl, error) {
+func newConfigManagerImpl(ctx context.Context, cfg *ConfigManagerConfig, repository Repository) (*configManagerImpl, error) {
 	cfg.withDefault()
 	manager := &configManagerImpl{
 		repository:        repository,
@@ -75,26 +75,26 @@ func (manager *configManagerImpl) Get(ctx context.Context, cfg config) error {
 func (c *configManagerImpl) RegisterRoute(ctx context.Context, registerFunc RouteRegistrar) error {
 
 	//setup swagger
-	if err := registerFunc(http.MethodGet, "/configs/swagger/*any", c.handleSwagger); err != nil {
+	if err := registerFunc(http.MethodGet, "/configo/swagger/*any", c.handleSwagger); err != nil {
 		return err
 	}
 
 	// setup ui
-	if err := registerFunc(http.MethodGet, "/configs/ui", c.handleUI); err != nil {
+	if err := registerFunc(http.MethodGet, "/configo/web/*any", c.handleUI); err != nil {
 		return err
 	}
 	// setup get config
-	if err := registerFunc(http.MethodGet, "/configs/config/{key}", c.handleGetConfig); err != nil {
+	if err := registerFunc(http.MethodGet, "/configo/config/{key}", c.handleGetConfig); err != nil {
 		return err
 	}
 
 	//setup save config
-	if err := registerFunc(http.MethodPost, "/configs/config", c.handleSaveConfig); err != nil {
+	if err := registerFunc(http.MethodPost, "/configo/config", c.handleSaveConfig); err != nil {
 		return err
 	}
 
 	// setup get all configs
-	if err := registerFunc(http.MethodGet, "/configs/metadata", c.handleGetConfigMetadata); err != nil {
+	if err := registerFunc(http.MethodGet, "/configo/metadata", c.handleGetConfigMetadata); err != nil {
 		return err
 	}
 	return nil

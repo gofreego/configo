@@ -103,5 +103,5 @@ func NewConfigManager(ctx context.Context, cfg *ConfigManagerConfig, repo Reposi
 	if repo == nil {
 		return nil, fmt.Errorf("repository is required, got nil")
 	}
-	return newconfigo(ctx, cfg, repo)
+	return newConfigManagerImpl(ctx, cfg, repo)
 }
