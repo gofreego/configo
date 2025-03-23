@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:web/screens/config/form.dart';
 
 class ConfigForm extends StatefulWidget {
   final String id;
@@ -53,14 +54,7 @@ class _ConfigFormState extends State<ConfigForm> {
               )
               : Column(
                 children: [
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: "Enter Configuration",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
+                  NewWidget(),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
