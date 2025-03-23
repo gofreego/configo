@@ -84,7 +84,7 @@ func (c *configManagerImpl) RegisterRoute(ctx context.Context, registerFunc Rout
 		return err
 	}
 	// setup get config
-	if err := registerFunc(http.MethodGet, "/configo/config/{key}", c.handleGetConfig); err != nil {
+	if err := registerFunc(http.MethodGet, "/configo/config", c.handleGetConfig); err != nil {
 		return err
 	}
 

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	_ "github.com/gofreego/configo/docs"
+	"github.com/gofreego/configo/docs"
 	"github.com/gofreego/goutils/customerrors"
 	"github.com/gofreego/goutils/response"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -17,6 +17,7 @@ import (
 var content embed.FS
 
 func (c *configManagerImpl) handleSwagger(w http.ResponseWriter, r *http.Request) {
+	docs.SwaggerInfo.BasePath = strings.Split(r.URL.Path, "/configo/swagger")[0]
 	httpSwagger.Handler()(w, r)
 }
 
@@ -58,18 +59,18 @@ func (c *configManagerImpl) handleUI(w http.ResponseWriter, r *http.Request) {
 
 // Swagger doc
 // @Summary Get config
-// @Description Get config by key
+// @Description Get config by id
 // @Tags Config
 // @Accept json
 // @Produce json
-// @Param key query string true "config key"
+// @Param id query string true "config id"
 // @Success 200 {object} ConfigObject
 // @Failure 400 {object} any
-// @Router /configs/confio/{key} [get]
+// @Router /configo/config [get]
 func (c *configManagerImpl) handleGetConfig(w http.ResponseWriter, r *http.Request) {
-	key := r.URL.Query().Get("key")
+	key := r.URL.Query().Get("id")
 	if key == "" {
-		response.WriteErrorV2(r.Context(), w, customerrors.BAD_REQUEST_ERROR("key is required in query params"))
+		response.WriteErrorV2(r.Context(), w, customerrors.BAD_REQUEST_ERROR("id is required in query params"))
 		return
 	}
 	cfg, err := c.getConfigByKey(r.Context(), key)

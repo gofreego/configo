@@ -84,9 +84,9 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get config by key
+      description: Get config by id
       parameters:
-      - description: Config id
+      - description: config id
         in: query
         name: id
         required: true

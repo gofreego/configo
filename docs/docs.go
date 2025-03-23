@@ -26,7 +26,7 @@ const docTemplate = `{
     "paths": {
         "/configo/config": {
             "get": {
-                "description": "Get config by key",
+                "description": "Get config by id",
                 "consumes": [
                     "application/json"
                 ],
@@ -40,7 +40,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Config id",
+                        "description": "config id",
                         "name": "id",
                         "in": "query",
                         "required": true
