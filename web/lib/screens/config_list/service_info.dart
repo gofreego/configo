@@ -9,21 +9,14 @@ class ServiceInfoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           serviceName,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 10),
-        Text(
-          serviceDescription,
-          style: const TextStyle(
-            fontSize: 16,
-          ),
-        ),
+        Text(serviceDescription, style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 63, 63, 63),fontWeight: FontWeight.w500),),
       ],
     );
   }

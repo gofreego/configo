@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:web/models/config/metadata.dart';
+import 'package:web/screens/config_list/service_info.dart';
 import 'package:web/services/config/config.dart';
 
 class ListConfigScreen extends StatefulWidget {
@@ -101,28 +102,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  serviceName,
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  serviceDescription,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
+            ServiceInfoWidget(),
 
             const SizedBox(height: 20),
             Expanded(
