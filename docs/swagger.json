@@ -17,6 +17,40 @@
     },
     "paths": {
         "/configo/config": {
+            "get": {
+                "description": "Get config by key",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Config id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/configo.ConfigObject"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    }
+                }
+            },
             "post": {
                 "description": "Save config",
                 "consumes": [
@@ -99,42 +133,6 @@
                         "description": "UI",
                         "schema": {
                             "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/configs/confio/{key}": {
-            "get": {
-                "description": "Get config by key",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "config key",
-                        "name": "key",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/configo.ConfigObject"
                         }
                     },
                     "400": {

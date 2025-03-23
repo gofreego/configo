@@ -81,6 +81,29 @@ info:
   version: "1.0"
 paths:
   /configo/config:
+    get:
+      consumes:
+      - application/json
+      description: Get config by key
+      parameters:
+      - description: Config id
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/configo.ConfigObject'
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Get config
+      tags:
+      - Config
     post:
       consumes:
       - application/json
@@ -139,30 +162,6 @@ paths:
           description: Bad Request
           schema: {}
       summary: UI
-      tags:
-      - Config
-  /configs/confio/{key}:
-    get:
-      consumes:
-      - application/json
-      description: Get config by key
-      parameters:
-      - description: config key
-        in: query
-        name: key
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/configo.ConfigObject'
-        "400":
-          description: Bad Request
-          schema: {}
-      summary: Get config
       tags:
       - Config
 swagger: "2.0"
