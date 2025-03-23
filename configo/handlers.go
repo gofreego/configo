@@ -28,7 +28,7 @@ func (c *configManagerImpl) handleSwagger(w http.ResponseWriter, r *http.Request
 // @Produce html
 // @Success 200 {string} string "UI"
 // @Failure 400 {object} any
-// @Router /configo/web/*any [get]
+// @Router /configo/web/ [get]
 func (c *configManagerImpl) handleUI(w http.ResponseWriter, r *http.Request) {
 	// Ensure the path is correct (handle root path and default file)
 	path := strings.Split(r.URL.Path, "/configo/web")
@@ -117,7 +117,7 @@ func (c *configManagerImpl) handleSaveConfig(w http.ResponseWriter, r *http.Requ
 // @Tags Config
 // @Accept json
 // @Produce json
-// @Success 200 {object} configMetadata
+// @Success 200 {object} configMetadataResponse
 // @Failure 400 {object} any
 // @Router /configo/metadata [get]
 func (c *configManagerImpl) handleGetConfigMetadata(w http.ResponseWriter, r *http.Request) {

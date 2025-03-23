@@ -63,9 +63,13 @@ func (manager *configManagerImpl) getConfigsMetadata(_ context.Context) (*config
 		keys = append(keys, k)
 	}
 	return &configMetadataResponse{
-		Keys:        keys,
-		Name:        manager.config.ServiceName,
-		Description: manager.config.ServiceDescription,
+		ServiceInfo: ServiceInfo{
+			Name:        manager.config.ServiceName,
+			Description: manager.config.ServiceDescription,
+		},
+		ConfigInfo: ConfigInfo{
+			ConfigKeys: keys,
+		},
 	}, nil
 }
 

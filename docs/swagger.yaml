@@ -1,4 +1,11 @@
 definitions:
+  configo.ConfigInfo:
+    properties:
+      configKeys:
+        items:
+          type: string
+        type: array
+    type: object
   configo.ConfigObject:
     properties:
       children:
@@ -39,6 +46,13 @@ definitions:
     - CONFIG_TYPE_CHOICE
     - CONFIG_TYPE_PARENT
     - CONFIG_TYPE_LIST
+  configo.ServiceInfo:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
   configo.UpdateConfigRequest:
     properties:
       key:
@@ -46,12 +60,12 @@ definitions:
       value:
         $ref: '#/definitions/configo.ConfigObject'
     type: object
-  configo.configMetadata:
+  configo.configMetadataResponse:
     properties:
-      keys:
-        items:
-          type: string
-        type: array
+      configInfo:
+        $ref: '#/definitions/configo.ConfigInfo'
+      serviceInfo:
+        $ref: '#/definitions/configo.ServiceInfo'
     type: object
 info:
   contact:
@@ -66,7 +80,7 @@ info:
   title: Config Manager APIs
   version: "1.0"
 paths:
-  /configs/config:
+  /configo/config:
     post:
       consumes:
       - application/json
@@ -91,7 +105,43 @@ paths:
       summary: Save config
       tags:
       - Config
-  /configs/config/{key}:
+  /configo/metadata:
+    get:
+      consumes:
+      - application/json
+      description: Get all config keys
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/configo.configMetadataResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Get all config keys
+      tags:
+      - Config
+  /configo/web/:
+    get:
+      consumes:
+      - application/json
+      description: UI
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: UI
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: UI
+      tags:
+      - Config
+  /configs/confio/{key}:
     get:
       consumes:
       - application/json
@@ -113,42 +163,6 @@ paths:
           description: Bad Request
           schema: {}
       summary: Get config
-      tags:
-      - Config
-  /configs/metadata:
-    get:
-      consumes:
-      - application/json
-      description: Get all config keys
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/configo.configMetadata'
-        "400":
-          description: Bad Request
-          schema: {}
-      summary: Get all config keys
-      tags:
-      - Config
-  /configs/ui:
-    get:
-      consumes:
-      - application/json
-      description: UI
-      produces:
-      - text/html
-      responses:
-        "200":
-          description: UI
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema: {}
-      summary: UI
       tags:
       - Config
 swagger: "2.0"

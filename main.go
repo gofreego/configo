@@ -62,7 +62,10 @@ func getRegistar(router gin.IRouter) configo.RouteRegistrar {
 
 func main() {
 	ctx := context.Background()
-	configo, err := configo.NewConfigManager(ctx, &configo.ConfigManagerConfig{}, NewRepo())
+	configo, err := configo.NewConfigManager(ctx, &configo.ConfigManagerConfig{
+		ServiceName:        "Test Service",
+		ServiceDescription: "The Test Service is a scalable and modular system designed to facilitate automated and manual testing processes across different domains. It enables developers, QA engineers, and businesses to validate functionality, performance, security, and reliability of software applications, APIs, or user knowledge in an examination environment. The service provides a structured approach to defining, executing, and reporting tests, ensuring high quality and accuracy in results.",
+	}, NewRepo())
 	if err != nil {
 		panic(err)
 	}
@@ -74,7 +77,7 @@ func main() {
 		panic(err)
 	}
 
-	logger.Info(ctx, "Swagger UI served at http://localhost:8085/configs/swagger/index.html")
+	logger.Info(ctx, "Swagger UI served at http://localhost:8085/myservice/configo/swagger/index.html")
 	logger.Info(ctx, "Starting server on port 8085")
 	router.Run(":8085")
 }

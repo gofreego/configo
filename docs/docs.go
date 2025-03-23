@@ -24,7 +24,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/configs/config": {
+        "/configo/config": {
             "post": {
                 "description": "Save config",
                 "consumes": [
@@ -62,7 +62,61 @@ const docTemplate = `{
                 }
             }
         },
-        "/configs/config/{key}": {
+        "/configo/metadata": {
+            "get": {
+                "description": "Get all config keys",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get all config keys",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/configo.configMetadataResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/configo/web/": {
+            "get": {
+                "description": "UI",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "text/html"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "UI",
+                "responses": {
+                    "200": {
+                        "description": "UI",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/configs/confio/{key}": {
             "get": {
                 "description": "Get config by key",
                 "consumes": [
@@ -97,63 +151,20 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/configs/metadata": {
-            "get": {
-                "description": "Get all config keys",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get all config keys",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/configo.configMetadata"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/configs/ui": {
-            "get": {
-                "description": "UI",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "text/html"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "UI",
-                "responses": {
-                    "200": {
-                        "description": "UI",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    }
-                }
-            }
         }
     },
     "definitions": {
+        "configo.ConfigInfo": {
+            "type": "object",
+            "properties": {
+                "configKeys": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "configo.ConfigObject": {
             "type": "object",
             "properties": {
@@ -207,6 +218,17 @@ const docTemplate = `{
                 "CONFIG_TYPE_LIST"
             ]
         },
+        "configo.ServiceInfo": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "configo.UpdateConfigRequest": {
             "type": "object",
             "properties": {
@@ -218,14 +240,14 @@ const docTemplate = `{
                 }
             }
         },
-        "configo.configMetadata": {
+        "configo.configMetadataResponse": {
             "type": "object",
             "properties": {
-                "keys": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "configInfo": {
+                    "$ref": "#/definitions/configo.ConfigInfo"
+                },
+                "serviceInfo": {
+                    "$ref": "#/definitions/configo.ServiceInfo"
                 }
             }
         }

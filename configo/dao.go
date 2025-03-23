@@ -59,8 +59,16 @@ func (co ConfigObject) Validate() error {
 	return nil
 }
 
+type ServiceInfo struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+type ConfigInfo struct {
+	ConfigKeys []string `json:"configKeys"`
+}
+
 type configMetadataResponse struct {
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	Keys        []string `json:"keys"`
+	ServiceInfo ServiceInfo `json:"serviceInfo"`
+	ConfigInfo  ConfigInfo  `json:"configInfo"`
 }
