@@ -37,7 +37,7 @@ func (manager *configManagerImpl) updateConfig(ctx context.Context, req *UpdateC
 	return nil
 }
 
-func (manager *configManagerImpl) getConfigByKey(ctx context.Context, key string) (*ConfigObject, error) {
+func (manager *configManagerImpl) getConfigByKey(ctx context.Context, key string) ([]ConfigObject, error) {
 	config, err := manager.repository.GetConfig(ctx, key)
 	if err != nil {
 		logger.Error(ctx, "failed to get config: %v", err)
@@ -47,14 +47,14 @@ func (manager *configManagerImpl) getConfigByKey(ctx context.Context, key string
 		logger.Error(ctx, "config not found: %v", key)
 		return nil, ErrConfigNotFound
 	}
-	var obj ConfigObject
+	var obj []ConfigObject
 	err = json.Unmarshal([]byte(config.Value), &obj)
 	if err != nil {
 		logger.Error(ctx, "failed to unmarshal config: %v", err)
 		return nil, ErrInvalidConfig
 	}
 
-	return &obj, nil
+	return obj, nil
 }
 
 func (manager *configManagerImpl) getConfigsMetadata(_ context.Context) (*configMetadataResponse, error) {
