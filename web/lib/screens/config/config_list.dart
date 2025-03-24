@@ -51,7 +51,10 @@ class _ListConfigScreenState extends State<ListConfigScreen> {
             isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : error != null
-                ? CustomErrorWidget(errorMessage: error!, onRetry: fetchConfigMetadata)
+                ? CustomErrorWidget(
+                  errorMessage: error!,
+                  onRetry: fetchConfigMetadata,
+                )
                 : Column(
                   children: [
                     Expanded(
@@ -59,14 +62,17 @@ class _ListConfigScreenState extends State<ListConfigScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ServiceInfoWidget(serviceInfo: metadata!.serviceInfo),
+                            ServiceInfoWidget(
+                              serviceInfo: metadata!.serviceInfo,
+                            ),
                             const SizedBox(height: 20),
                             ListView.builder(
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                               itemCount: metadata!.configInfo.configKeys.length,
                               itemBuilder: (context, index) {
-                                final item = metadata!.configInfo.configKeys[index];
+                                final item =
+                                    metadata!.configInfo.configKeys[index];
                                 return ConfigTile(id: item);
                               },
                             ),
@@ -95,66 +101,84 @@ class _ConfigTileState extends State<ConfigTile> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 3,
       margin: const EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        children: [
-          InkWell(
-            onTap: () {
-              setState(() {
-                isExpanded = !isExpanded;
-              });
-            },
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.3), width: 1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.settings,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          widget.id,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+            width: 2,
+          ),
+          // color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+        ),
+        child: Column(
+          children: [
+            InkWell(
+              onTap: () {
+                setState(() {
+                  isExpanded = !isExpanded;
+                });
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius:
+                      isExpanded
+                          ? BorderRadius.only(
+                            topLeft: Radius.circular(12),
+                            topRight: Radius.circular(12),
+                          )
+                          : BorderRadius.circular(12),
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.settings,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
-                        ),
-                      ],
-                    ),
-                    Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
-                  ],
+                          const SizedBox(width: 12),
+                          Text(
+                            widget.id,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            child:
-                isExpanded
-                    ? ConfigForm(
-                      id: widget.id,
-                      onCancel: () {
-                        setState(() {
-                          isExpanded = false;
-                        });
-                      },
-                    )
-                    : const SizedBox.shrink(),
-          ),
-        ],
+            AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              child:
+                  isExpanded
+                      ? ConfigForm(
+                        id: widget.id,
+                        onCancel: () {
+                          setState(() {
+                            isExpanded = false;
+                          });
+                        },
+                      )
+                      : const SizedBox.shrink(),
+            ),
+          ],
+        ),
       ),
     );
   }
