@@ -6,7 +6,10 @@ class ApiResponse<T> {
   ApiResponse({this.message, this.error, this.data});
 
   /// Convert a JSON Map to an ApiResponse instance for success responses
-  factory ApiResponse.fromSuccessJson(Map<String, dynamic> json, T Function(Map<String, dynamic>) fromJson) {
+  factory ApiResponse.fromSuccessJson(
+    Map<String, dynamic> json,
+    T Function(Map<String, dynamic>) fromJson,
+  ) {
     return ApiResponse<T>(
       message: json['message'],
       data: json['data'] != null ? fromJson(json['data']) : null,
@@ -15,8 +18,10 @@ class ApiResponse<T> {
 
   /// Convert a JSON Map to an ApiResponse instance for error responses
   factory ApiResponse.fromErrorJson(Map<String, dynamic> json) {
-    return ApiResponse<T>(
-      error: json['error'],
-    );
+    try {
+      return ApiResponse<T>(error: json['error']);
+    } catch (e) {
+      throw Exception('Somethig went wrong');
+    }
   }
 }

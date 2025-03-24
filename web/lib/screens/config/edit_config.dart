@@ -5,7 +5,6 @@ class ConfigForm extends StatefulWidget {
   final String id;
   final Function() onCancel;
   const ConfigForm({super.key, required this.id, required this.onCancel});
-  
 
   @override
   State<ConfigForm> createState() => _ConfigFormState();
@@ -27,11 +26,9 @@ class _ConfigFormState extends State<ConfigForm> {
     });
   }
 
-
   void saveConfig() {
     // Save configuration
   }
-
 
   @override
   void initState() {
@@ -63,12 +60,19 @@ class _ConfigFormState extends State<ConfigForm> {
                         onPressed: () {
                           widget.onCancel();
                         },
+
                         child: const Text("Cancel"),
                       ),
                       const SizedBox(width: 10),
                       ElevatedButton(
                         onPressed: () {},
-                        child: const Text("Submit"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).primaryColor,
+                        ),
+                        child: const Text(
+                          "Submit",
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                   ),

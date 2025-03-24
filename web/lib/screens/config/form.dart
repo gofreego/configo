@@ -1,9 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:web/models/config/object.dart';
 import 'package:web/models/config/type.dart';
-
+import 'package:flutter_code_editor/flutter_code_editor.dart';
+import 'package:highlight/languages/json.dart';
+import 'package:web/widgets/json_editor.dart';
 
 class NewWidget extends StatelessWidget {
   const NewWidget({super.key});
@@ -99,7 +102,13 @@ class _ConfigFormState extends State<ConfigForm> {
             child: Wrap(
               spacing: 16.0,
               runSpacing: 16.0,
-              children: sortedConfigs.map((config) => _buildConfigField(config, constraints.maxWidth)).toList(),
+              children:
+                  sortedConfigs
+                      .map(
+                        (config) =>
+                            _buildConfigField(config, constraints.maxWidth),
+                      )
+                      .toList(),
             ),
           ),
         );
@@ -116,7 +125,9 @@ class _ConfigFormState extends State<ConfigForm> {
       ConfigType.bigText: 5,
       ConfigType.json: 6,
     };
-    configs.sort((a, b) => (typeOrder[a.type] ?? 99).compareTo(typeOrder[b.type] ?? 99));
+    configs.sort(
+      (a, b) => (typeOrder[a.type] ?? 99).compareTo(typeOrder[b.type] ?? 99),
+    );
     return configs;
   }
 
@@ -135,22 +146,36 @@ class _ConfigFormState extends State<ConfigForm> {
         child: Column(
           children: [
             ListTile(
-              title: Text(config.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+              title: Text(
+                config.name,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               subtitle: Text(config.description),
-              trailing: Icon(expandedStates[config.name] == true ? Icons.expand_less : Icons.expand_more),
+              trailing: Icon(
+                expandedStates[config.name] == true
+                    ? Icons.expand_less
+                    : Icons.expand_more,
+              ),
               onTap: () {
                 setState(() {
-                  expandedStates[config.name] = !(expandedStates[config.name] ?? false);
+                  expandedStates[config.name] =
+                      !(expandedStates[config.name] ?? false);
                 });
               },
             ),
             if (expandedStates[config.name] == true)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
                 child: Wrap(
                   spacing: 16.0,
                   runSpacing: 16.0,
-                  children: _sortConfigs(config.children!).map((child) => _buildConfigField(child, maxWidth)).toList(),
+                  children:
+                      _sortConfigs(config.children!)
+                          .map((child) => _buildConfigField(child, maxWidth))
+                          .toList(),
                 ),
               ),
           ],
@@ -161,75 +186,86 @@ class _ConfigFormState extends State<ConfigForm> {
 
   Widget _buildInputField(ConfigObject config, double maxWidth) {
     double fieldWidth = maxWidth > 400 ? 400 : maxWidth * 0.9;
+    return SizedBox(
+      width: fieldWidth,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            config.description,
+            style: TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+          const SizedBox(height: 4),
+          _getFieldWidget(config),
+        ],
+      ),
+    );
+  }
+
+  Widget _getFieldWidget(ConfigObject config) {
     switch (config.type) {
       case ConfigType.string:
-        return SizedBox(
-          width: fieldWidth,
-          child: TextFormField(
-            initialValue: formValues[config.name] ?? '',
-            decoration: InputDecoration(labelText: config.name),
-            onChanged: (value) => formValues[config.name] = value,
+        return TextFormField(
+          initialValue: formValues[config.name] ?? '',
+          decoration: InputDecoration(
+            labelText: config.name,
+            border: OutlineInputBorder(),
           ),
+          onChanged: (value) => formValues[config.name] = value,
         );
       case ConfigType.bigText:
-        return SizedBox(
-          width: fieldWidth,
-          child: TextFormField(
-            initialValue: formValues[config.name] ?? '',
-            decoration: InputDecoration(labelText: config.name),
-            minLines: 3,
-            maxLines: 5,
-            onChanged: (value) => formValues[config.name] = value,
+        return TextFormField(
+          initialValue: formValues[config.name] ?? '',
+          decoration: InputDecoration(
+            labelText: config.name,
+            border: OutlineInputBorder(),
           ),
+          minLines: 3,
+          maxLines: 5,
+          onChanged: (value) => formValues[config.name] = value,
         );
       case ConfigType.number:
-        return SizedBox(
-          width: fieldWidth,
-          child: TextFormField(
-            keyboardType: TextInputType.numberWithOptions(decimal: true),
-            initialValue: formValues[config.name]?.toString() ?? '',
-            decoration: InputDecoration(labelText: config.name),
-            onChanged: (value) => formValues[config.name] = num.tryParse(value) ?? 0,
+        return TextFormField(
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          initialValue: formValues[config.name]?.toString() ?? '',
+          decoration: InputDecoration(
+            labelText: config.name,
+            border: OutlineInputBorder(),
           ),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(
+              RegExp(r'^\d*\.?\d*$'),
+            ), // Only allows numbers and a single decimal point
+          ],
+          onChanged: (value) {
+            formValues[config.name] = num.tryParse(value) ?? 0;
+          },
         );
+
       case ConfigType.boolean:
-        return SizedBox(
-          width: fieldWidth,
-          child: SwitchListTile(
-            title: Text(config.name),
-            value: formValues[config.name] ?? false,
-            onChanged: (value) => setState(() => formValues[config.name] = value),
-          ),
+        return SwitchListTile(
+          title: Text(config.name),
+          value: formValues[config.name] ?? false,
+          onChanged: (value) => setState(() => formValues[config.name] = value),
         );
       case ConfigType.choice:
-        return SizedBox(
-          width: fieldWidth,
-          child: DropdownButtonFormField<String>(
-            value: formValues[config.name],
-            decoration: InputDecoration(labelText: config.name),
-            items: config.choices!.map((choice) => DropdownMenuItem(value: choice, child: Text(choice))).toList(),
-            onChanged: (value) => setState(() => formValues[config.name] = value),
+        return DropdownButtonFormField<String>(
+          value: formValues[config.name],
+          decoration: InputDecoration(
+            labelText: config.name,
+            border: OutlineInputBorder(),
           ),
+          items:
+              config.choices!
+                  .map(
+                    (choice) =>
+                        DropdownMenuItem(value: choice, child: Text(choice)),
+                  )
+                  .toList(),
+          onChanged: (value) => setState(() => formValues[config.name] = value),
         );
       case ConfigType.json:
-        return SizedBox(
-          width: fieldWidth,
-          child: TextFormField(
-            initialValue: formValues[config.name]?.toString() ?? '',
-            decoration: InputDecoration(labelText: config.name),
-            minLines: 3,
-            maxLines: 10,
-            keyboardType: TextInputType.multiline,
-            onChanged: (value) {
-              try {
-                final formattedJson = const JsonEncoder.withIndent('  ').convert(jsonDecode(value));
-                setState(() => formValues[config.name] = formattedJson);
-              } catch (_) {
-                formValues[config.name] = value;
-              }
-            },
-          ),
-        );
+        return JsonEditorWidget(name: config.name);
       default:
         return const SizedBox.shrink();
     }

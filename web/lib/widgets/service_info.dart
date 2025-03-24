@@ -14,7 +14,7 @@ class ServiceInfoWidget extends StatelessWidget {
       children: [
         Text(
           serviceInfo.name,
-          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 70, 67, 67)),
         ),
         const SizedBox(height: 10),
         Text(serviceInfo.description, style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 63, 63, 63),fontWeight: FontWeight.w500),),

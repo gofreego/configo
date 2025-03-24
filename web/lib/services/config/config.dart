@@ -17,24 +17,27 @@ class ConfigService extends BaseAPIService {
   factory ConfigService() {
     return _instance;
   }
-   
-   Future<ConfigMetadataResponse> getConfigMetadata() async {
-    final String url = '${BaseAPIService.BASE_URL}/configo/metadata'; // Removed extra space
 
-    final response = await http.get(
+  Future<ApiResponse<ConfigMetadataResponse>> getConfigMetadata() async {
+    final String url =
+        '${BaseAPIService.BASE_URL}/configo/metadata'; // Removed extra space
+    http.Response response;
+    response = await http.get(
       Uri.parse(url),
       headers: BaseAPIService.getHeaders(),
     );
-
     if (response.statusCode == 200) {
-      return  ApiResponse.fromSuccessJson(json.decode(response.body),  ConfigMetadataResponse.fromJson).data!;
+      return ApiResponse.fromSuccessJson(
+        json.decode(response.body),
+        ConfigMetadataResponse.fromJson,
+      );
     } else {
-      throw Exception('Failed to fetch config metadata');
+      return ApiResponse.fromErrorJson(json.decode(response.body));
     }
   }
 
   Future<ConfigObject> getConfig(String id) async {
-    final String url = '${BaseAPIService.BASE_URL}/configo/config/$id'; 
+    final String url = '${BaseAPIService.BASE_URL}/configo/config/$id';
 
     final response = await http.get(
       Uri.parse(url),
@@ -42,7 +45,10 @@ class ConfigService extends BaseAPIService {
     );
 
     if (response.statusCode == 200) {
-      return  ApiResponse.fromSuccessJson(json.decode(response.body),  ConfigObject.fromJson).data!;
+      return ApiResponse.fromSuccessJson(
+        json.decode(response.body),
+        ConfigObject.fromJson,
+      ).data!;
     } else {
       throw Exception('Failed to fetch config object');
     }

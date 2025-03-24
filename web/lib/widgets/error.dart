@@ -18,7 +18,7 @@ class CustomErrorWidget extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, color: Colors.red, size: 48),
+              Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error, size: 48),
               const SizedBox(height: 10),
               Text(
                 errorMessage,
@@ -33,10 +33,10 @@ class CustomErrorWidget extends StatelessWidget {
                 const SizedBox(height: 12),
                 ElevatedButton.icon(
                   onPressed: onRetry,
-                  icon: const Icon(Icons.refresh),
+                  icon: const Icon(Icons.refresh, color: Colors.white,),
                   label: const Text("Retry"),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    backgroundColor: Theme.of(context).colorScheme.error,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),

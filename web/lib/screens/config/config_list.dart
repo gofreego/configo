@@ -17,22 +17,28 @@ class _ListConfigScreenState extends State<ListConfigScreen> {
   String? error;
   ConfigMetadataResponse? metadata;
 
+  void fetchConfigMetadata() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      var res = await ConfigService().getConfigMetadata();
+      setState(() {
+        isLoading = false;
+        metadata = res.data;
+        error = res.error;
+      });
+    } on Exception catch (_) {
+      setState(() {
+        isLoading = false;
+        error = "An error occurred. Please try again later.";
+      });
+    }
+  }
+
   @override
   void initState() {
-    ConfigService()
-        .getConfigMetadata()
-        .then((value) {
-          setState(() {
-            isLoading = false;
-            metadata = value;
-          });
-        })
-        .catchError((error) {
-          setState(() {
-            isLoading = false;
-            error = error.toString();
-          });
-        });
+    fetchConfigMetadata();
     super.initState();
   }
 
@@ -44,21 +50,28 @@ class _ListConfigScreenState extends State<ListConfigScreen> {
         child:
             isLoading
                 ? const Center(child: CircularProgressIndicator())
-                :
-            error != null
-                ? CustomErrorWidget(errorMessage: error!, onRetry: () {})
+                : error != null
+                ? CustomErrorWidget(errorMessage: error!, onRetry: fetchConfigMetadata)
                 : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ServiceInfoWidget(serviceInfo: metadata!.serviceInfo),
-                    const SizedBox(height: 20),
                     Expanded(
-                      child: ListView.builder(
-                        itemCount: metadata!.configInfo.configKeys.length,
-                        itemBuilder: (context, index) {
-                          final item = metadata!.configInfo.configKeys[index];
-                          return ConfigTile(id: item);
-                        },
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ServiceInfoWidget(serviceInfo: metadata!.serviceInfo),
+                            const SizedBox(height: 20),
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: metadata!.configInfo.configKeys.length,
+                              itemBuilder: (context, index) {
+                                final item = metadata!.configInfo.configKeys[index];
+                                return ConfigTile(id: item);
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -125,11 +138,14 @@ class _ConfigTileState extends State<ConfigTile> {
             curve: Curves.easeInOut,
             child:
                 isExpanded
-                    ? ConfigForm(id: widget.id, onCancel: () {
-                      setState(() {
-                        isExpanded = false;
-                      });
-                    })
+                    ? ConfigForm(
+                      id: widget.id,
+                      onCancel: () {
+                        setState(() {
+                          isExpanded = false;
+                        });
+                      },
+                    )
                     : const SizedBox.shrink(),
           ),
         ],
