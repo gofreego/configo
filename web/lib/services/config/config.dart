@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:web/models/config/config.dart';
 import 'package:web/models/config/metadata.dart';
-import 'package:web/models/config/object.dart';
 import 'package:web/models/response/response.dart';
 import 'package:web/utils/api.dart';
 import 'package:http/http.dart' as http;
@@ -36,8 +36,8 @@ class ConfigService extends BaseAPIService {
     }
   }
 
-  Future<ConfigObject> getConfig(String id) async {
-    final String url = '${BaseAPIService.BASE_URL}/configo/config/$id';
+  Future<ApiResponse<GetConfigResponse>> getConfig(String id) async {
+    final String url = '${BaseAPIService.BASE_URL}/configo/config?id=$id';
 
     final response = await http.get(
       Uri.parse(url),
@@ -47,10 +47,10 @@ class ConfigService extends BaseAPIService {
     if (response.statusCode == 200) {
       return ApiResponse.fromSuccessJson(
         json.decode(response.body),
-        ConfigObject.fromJson,
-      ).data!;
+        GetConfigResponse.fromJson,
+      );
     } else {
-      throw Exception('Failed to fetch config object');
+      return ApiResponse.fromErrorJson(json.decode(response.body));
     }
   }
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:web/models/config/object.dart';
 import 'package:web/screens/config/form.dart';
+import 'package:web/services/config/config.dart';
+import 'package:web/widgets/error.dart';
 
 class ConfigForm extends StatefulWidget {
   final String id;
@@ -12,18 +15,26 @@ class ConfigForm extends StatefulWidget {
 
 class _ConfigFormState extends State<ConfigForm> {
   bool isLoading = true;
-
-  void fetchConfig() {
+  String? error;
+  List<ConfigObject> configs = [];
+  void fetchConfig() async {
     setState(() {
       isLoading = true;
     });
-
-    // Simulate network delay
-    Future.delayed(const Duration(seconds: 1), () {
+    try {
+      var res = await ConfigService().getConfig(widget.id);
       setState(() {
         isLoading = false;
+        configs = res.data!.configs ?? [];
+        error = res.error;
       });
-    });
+    } on Exception catch (e) {
+      print(e);
+      setState(() {
+        isLoading = false;
+        error = "An error occurred. Please try again.";
+      });
+    }
   }
 
   void saveConfig() {
@@ -39,7 +50,7 @@ class _ConfigFormState extends State<ConfigForm> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
         children: [
           isLoading
@@ -49,9 +60,11 @@ class _ConfigFormState extends State<ConfigForm> {
                   child: CircularProgressIndicator(),
                 ),
               )
+              : error != null
+              ? CustomErrorWidget(errorMessage: error!, onRetry: fetchConfig)
               : Column(
                 children: [
-                  NewWidget(),
+                  ConfigFormWidget(configs: configs),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,

@@ -64,21 +64,21 @@ func (c *configManagerImpl) handleUI(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id query string true "config id"
-// @Success 200 {object} ConfigObject
+// @Success 200 {object} GetConfigResponse
 // @Failure 400 {object} any
 // @Router /configo/config [get]
 func (c *configManagerImpl) handleGetConfig(w http.ResponseWriter, r *http.Request) {
-	key := r.URL.Query().Get("id")
-	if key == "" {
+	id := r.URL.Query().Get("id")
+	if id == "" {
 		response.WriteErrorV2(r.Context(), w, customerrors.BAD_REQUEST_ERROR("id is required in query params"))
 		return
 	}
-	cfg, err := c.getConfigByKey(r.Context(), key)
+	res, err := c.getConfigByKey(r.Context(), id)
 	if err != nil {
 		response.WriteErrorV2(r.Context(), w, err)
 		return
 	}
-	response.WriteSuccessV2(r.Context(), w, cfg)
+	response.WriteSuccessV2(r.Context(), w, res)
 }
 
 // Swagger doc

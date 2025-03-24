@@ -46,6 +46,13 @@ definitions:
     - CONFIG_TYPE_CHOICE
     - CONFIG_TYPE_PARENT
     - CONFIG_TYPE_LIST
+  configo.GetConfigResponse:
+    properties:
+      configs:
+        items:
+          $ref: '#/definitions/configo.ConfigObject'
+        type: array
+    type: object
   configo.ServiceInfo:
     properties:
       description:
@@ -58,7 +65,9 @@ definitions:
       key:
         type: string
       value:
-        $ref: '#/definitions/configo.ConfigObject'
+        items:
+          $ref: '#/definitions/configo.ConfigObject'
+        type: array
     type: object
   configo.configMetadataResponse:
     properties:
@@ -97,7 +106,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/configo.ConfigObject'
+            $ref: '#/definitions/configo.GetConfigResponse'
         "400":
           description: Bad Request
           schema: {}

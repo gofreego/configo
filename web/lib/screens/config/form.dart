@@ -4,109 +4,16 @@ import 'package:web/models/config/object.dart';
 import 'package:web/models/config/type.dart';
 import 'package:web/widgets/json_editor.dart';
 
-class NewWidget extends StatelessWidget {
-  const NewWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    List<ConfigObject> dummyConfigs = [
-      ConfigObject(
-        name: "Username",
-        type: ConfigType.string,
-        description: "Enter your username",
-        required: true,
-      ),
-      ConfigObject(
-        name: "About",
-        type: ConfigType.bigText,
-        description: "About yourself",
-        required: true,
-      ),
-      ConfigObject(
-        name: "Age",
-        type: ConfigType.number,
-        description: "Enter your age",
-        required: true,
-      ),
-      ConfigObject(
-        name: "Enable Notifications",
-        type: ConfigType.boolean,
-        description: "Turn on to receive notifications",
-        required: false,
-      ),
-      ConfigObject(
-        name: "Theme",
-        type: ConfigType.choice,
-        description: "Choose a theme",
-        required: true,
-        choices: ["Light", "Dark", "System"],
-      ),
-      ConfigObject(
-        name: "Settings",
-        type: ConfigType.parent,
-        description: "User preferences",
-        required: false,
-        children: [
-          ConfigObject(
-            name: "Font Size",
-            type: ConfigType.number,
-            description: "Adjust font size",
-            required: false,
-          ),
-          ConfigObject(
-            name: "Language",
-            type: ConfigType.choice,
-            description: "Select language",
-            required: true,
-            choices: ["English", "Spanish", "French"],
-          ),
-          // add another parent config
-          ConfigObject(
-            name: "Advanced",
-            type: ConfigType.parent,
-            description: "Advanced settings",
-            required: false,
-            children: [
-              ConfigObject(
-                name: "Custom Theme",
-                type: ConfigType.choice,
-                description: "Select a custom theme",
-                required: false,
-                choices: ["Red", "Green", "Blue"],
-              ),
-              ConfigObject(
-                name: "Custom Font",
-                type: ConfigType.choice,
-                description: "Select a custom font",
-                required: false,
-                choices: ["Arial", "Roboto", "Open Sans"],
-              ),
-            ],
-          ),
-        ],
-      ),
-      ConfigObject(
-        name: "Custom JSON",
-        type: ConfigType.json,
-        description: "Enter custom configuration in JSON format",
-        required: false,
-      ),
-    ];
-
-    return ConfigForm(configs: dummyConfigs);
-  }
-}
-
-class ConfigForm extends StatefulWidget {
+class ConfigFormWidget extends StatefulWidget {
   final List<ConfigObject> configs;
 
-  const ConfigForm({super.key, required this.configs});
+  const ConfigFormWidget({super.key, required this.configs});
 
   @override
-  ConfigFormState createState() => ConfigFormState();
+  ConfigFormWidgetState createState() => ConfigFormWidgetState();
 }
 
-class ConfigFormState extends State<ConfigForm> {
+class ConfigFormWidgetState extends State<ConfigFormWidget> {
   Map<String, dynamic> formValues = {};
   Map<String, bool> isExpandedMap = {};
 
@@ -193,7 +100,11 @@ class ConfigFormState extends State<ConfigForm> {
             ),
             if (isExpandedMap[config.name]!)
               Padding(
-                padding: const EdgeInsets.only(left: 16.0, top: 16.0, bottom: 16.0),
+                padding: const EdgeInsets.only(
+                  left: 16.0,
+                  top: 16.0,
+                  bottom: 16.0,
+                ),
                 child: Wrap(
                   spacing: 16.0,
                   runSpacing: 16.0,

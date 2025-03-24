@@ -5,3 +5,7 @@ type UpdateConfigRequest struct {
 	Value     []ConfigObject `json:"value"`
 	UpdatedBy string         `json:"-"`
 }
+
+type GetConfigResponse struct {
+	Configs []ConfigObject `json:"configs"`
+}

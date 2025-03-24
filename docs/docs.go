@@ -50,7 +50,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/configo.ConfigObject"
+                            "$ref": "#/definitions/configo.GetConfigResponse"
                         }
                     },
                     "400": {
@@ -216,6 +216,17 @@ const docTemplate = `{
                 "CONFIG_TYPE_LIST"
             ]
         },
+        "configo.GetConfigResponse": {
+            "type": "object",
+            "properties": {
+                "configs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/configo.ConfigObject"
+                    }
+                }
+            }
+        },
         "configo.ServiceInfo": {
             "type": "object",
             "properties": {
@@ -234,7 +245,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "value": {
-                    "$ref": "#/definitions/configo.ConfigObject"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/configo.ConfigObject"
+                    }
                 }
             }
         },

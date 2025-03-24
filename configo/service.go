@@ -37,7 +37,7 @@ func (manager *configManagerImpl) updateConfig(ctx context.Context, req *UpdateC
 	return nil
 }
 
-func (manager *configManagerImpl) getConfigByKey(ctx context.Context, key string) ([]ConfigObject, error) {
+func (manager *configManagerImpl) getConfigByKey(ctx context.Context, key string) (*GetConfigResponse, error) {
 	config, err := manager.repository.GetConfig(ctx, key)
 	if err != nil {
 		logger.Error(ctx, "failed to get config: %v", err)
@@ -54,7 +54,7 @@ func (manager *configManagerImpl) getConfigByKey(ctx context.Context, key string
 		return nil, ErrInvalidConfig
 	}
 
-	return obj, nil
+	return &GetConfigResponse{Configs: obj}, nil
 }
 
 func (manager *configManagerImpl) getConfigsMetadata(_ context.Context) (*configMetadataResponse, error) {
