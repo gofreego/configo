@@ -37,8 +37,31 @@ class _ConfigFormState extends State<ConfigForm> {
     }
   }
 
-  void saveConfig() {
-    // Save configuration
+  void saveConfig() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      var res = await ConfigService().updateConfig(widget.id, configs);
+      setState(() {
+        isLoading = false;
+        error = res.error;
+        if (res.error == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Configs updated successfully"),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      });
+    } on Exception catch (e) {
+      print(e);
+      setState(() {
+        isLoading = false;
+        error = "An error occurred. Please try again.";
+      });
+    }
   }
 
   @override
@@ -47,10 +70,76 @@ class _ConfigFormState extends State<ConfigForm> {
     super.initState();
   }
 
+  //show confirm dialog on cancel and submit
+  confirmDialog(String title, String content, Function() onConfirm) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: Text(
+            title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          content: Text(
+            content,
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                onConfirm();
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Yes',
+                style: TextStyle(
+                  color: Colors.green,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'No',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+   
+  onCancel() {
+    widget.onCancel();
+  }
+
+  onSubmit() {
+    confirmDialog(
+      "Update Configs",
+      "Are you sure you want to update the configs?",
+      saveConfig,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           isLoading
@@ -67,18 +156,16 @@ class _ConfigFormState extends State<ConfigForm> {
                   ConfigFormWidget(configs: configs),
                   const SizedBox(height: 10),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
-                        onPressed: () {
-                          widget.onCancel();
-                        },
+                        onPressed: onCancel,
 
                         child: const Text("Cancel"),
                       ),
                       const SizedBox(width: 10),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: onSubmit,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).primaryColor,
                         ),

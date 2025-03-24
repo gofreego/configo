@@ -16,6 +16,11 @@ class ApiResponse<T> {
     );
   }
 
+  // only message
+  factory ApiResponse.fromMessageJson(Map<String, dynamic> json) {
+    return ApiResponse<T>(message: json['message']);
+  }
+
   /// Convert a JSON Map to an ApiResponse instance for error responses
   factory ApiResponse.fromErrorJson(Map<String, dynamic> json) {
     try {

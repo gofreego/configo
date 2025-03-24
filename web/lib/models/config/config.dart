@@ -16,3 +16,14 @@ class GetConfigResponse {
     );
   }
 }
+
+class UpdateConfigRequest {
+  final String id;
+  final List<ConfigObject> configs;
+
+  UpdateConfigRequest({required this.id, required this.configs});
+
+  Map<String, dynamic> toJson() {
+    return {"id": id, 'configs': configs.map((e) => e.toJson()).toList()};
+  }
+}

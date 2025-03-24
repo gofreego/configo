@@ -62,12 +62,12 @@ definitions:
     type: object
   configo.UpdateConfigRequest:
     properties:
-      key:
-        type: string
-      value:
+      configs:
         items:
           $ref: '#/definitions/configo.ConfigObject'
         type: array
+      id:
+        type: string
     type: object
   configo.configMetadataResponse:
     properties:

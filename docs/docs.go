@@ -241,14 +241,14 @@ const docTemplate = `{
         "configo.UpdateConfigRequest": {
             "type": "object",
             "properties": {
-                "key": {
-                    "type": "string"
-                },
-                "value": {
+                "configs": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/configo.ConfigObject"
                     }
+                },
+                "id": {
+                    "type": "string"
                 }
             }
         },

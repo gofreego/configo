@@ -1,8 +1,8 @@
 package configo
 
 type UpdateConfigRequest struct {
-	Key       string         `json:"key"`
-	Value     []ConfigObject `json:"value"`
+	Key       string         `json:"id"`
+	Value     []ConfigObject `json:"configs"`
 	UpdatedBy string         `json:"-"`
 }
 
