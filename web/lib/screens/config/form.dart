@@ -1,11 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:web/models/config/object.dart';
 import 'package:web/models/config/type.dart';
-import 'package:flutter_code_editor/flutter_code_editor.dart';
-import 'package:highlight/languages/json.dart';
 import 'package:web/widgets/json_editor.dart';
 
 class NewWidget extends StatelessWidget {
@@ -45,27 +41,50 @@ class NewWidget extends StatelessWidget {
         required: true,
         choices: ["Light", "Dark", "System"],
       ),
-      // ConfigObject(
-      //   name: "Settings",
-      //   type: ConfigType.parent,
-      //   description: "User preferences",
-      //   required: false,
-      //   children: [
-      //     ConfigObject(
-      //       name: "Font Size",
-      //       type: ConfigType.number,
-      //       description: "Adjust font size",
-      //       required: false,
-      //     ),
-      //     ConfigObject(
-      //       name: "Language",
-      //       type: ConfigType.choice,
-      //       description: "Select language",
-      //       required: true,
-      //       choices: ["English", "Spanish", "French"],
-      //     ),
-      //   ],
-      // ),
+      ConfigObject(
+        name: "Settings",
+        type: ConfigType.parent,
+        description: "User preferences",
+        required: false,
+        children: [
+          ConfigObject(
+            name: "Font Size",
+            type: ConfigType.number,
+            description: "Adjust font size",
+            required: false,
+          ),
+          ConfigObject(
+            name: "Language",
+            type: ConfigType.choice,
+            description: "Select language",
+            required: true,
+            choices: ["English", "Spanish", "French"],
+          ),
+          // add another parent config
+          ConfigObject(
+            name: "Advanced",
+            type: ConfigType.parent,
+            description: "Advanced settings",
+            required: false,
+            children: [
+              ConfigObject(
+                name: "Custom Theme",
+                type: ConfigType.choice,
+                description: "Select a custom theme",
+                required: false,
+                choices: ["Red", "Green", "Blue"],
+              ),
+              ConfigObject(
+                name: "Custom Font",
+                type: ConfigType.choice,
+                description: "Select a custom font",
+                required: false,
+                choices: ["Arial", "Roboto", "Open Sans"],
+              ),
+            ],
+          ),
+        ],
+      ),
       ConfigObject(
         name: "Custom JSON",
         type: ConfigType.json,
@@ -84,32 +103,30 @@ class ConfigForm extends StatefulWidget {
   const ConfigForm({super.key, required this.configs});
 
   @override
-  _ConfigFormState createState() => _ConfigFormState();
+  ConfigFormState createState() => ConfigFormState();
 }
 
-class _ConfigFormState extends State<ConfigForm> {
+class ConfigFormState extends State<ConfigForm> {
   Map<String, dynamic> formValues = {};
-  Map<String, bool> expandedStates = {};
+  Map<String, bool> isExpandedMap = {};
 
   @override
   Widget build(BuildContext context) {
     List<ConfigObject> sortedConfigs = _sortConfigs(widget.configs);
     return LayoutBuilder(
       builder: (context, constraints) {
-        return SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Wrap(
-              spacing: 16.0,
-              runSpacing: 16.0,
-              children:
-                  sortedConfigs
-                      .map(
-                        (config) =>
-                            _buildConfigField(config, constraints.maxWidth),
-                      )
-                      .toList(),
-            ),
+        return Padding(
+          padding: const EdgeInsets.only(left: 16.0, bottom: 16.0, top: 16.0),
+          child: Wrap(
+            spacing: 16.0,
+            runSpacing: 16.0,
+            children:
+                sortedConfigs
+                    .map(
+                      (config) =>
+                          _buildConfigField(config, constraints.maxWidth),
+                    )
+                    .toList(),
           ),
         );
       },
@@ -139,36 +156,44 @@ class _ConfigFormState extends State<ConfigForm> {
   }
 
   Widget _buildExpandableConfig(ConfigObject config, double maxWidth) {
+    if (!isExpandedMap.containsKey(config.name)) {
+      isExpandedMap[config.name] = false;
+    }
     return SizedBox(
       width: maxWidth,
       child: Card(
-        margin: const EdgeInsets.symmetric(vertical: 8.0),
         child: Column(
           children: [
-            ListTile(
-              title: Text(
-                config.name,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(config.description),
-              trailing: Icon(
-                expandedStates[config.name] == true
-                    ? Icons.expand_less
-                    : Icons.expand_more,
-              ),
-              onTap: () {
-                setState(() {
-                  expandedStates[config.name] =
-                      !(expandedStates[config.name] ?? false);
-                });
-              },
-            ),
-            if (expandedStates[config.name] == true)
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 8.0,
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                  width: 1,
                 ),
+                borderRadius: BorderRadius.circular(12.0),
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              ),
+              child: ListTile(
+                title: Text(
+                  config.name,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(config.description),
+                trailing: Icon(
+                  isExpandedMap[config.name]!
+                      ? Icons.expand_less
+                      : Icons.expand_more,
+                ),
+                onTap: () {
+                  setState(() {
+                    isExpandedMap[config.name] = !isExpandedMap[config.name]!;
+                  });
+                },
+              ),
+            ),
+            if (isExpandedMap[config.name]!)
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0, top: 16.0, bottom: 16.0),
                 child: Wrap(
                   spacing: 16.0,
                   runSpacing: 16.0,

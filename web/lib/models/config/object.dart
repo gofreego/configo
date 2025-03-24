@@ -6,7 +6,7 @@ class ConfigObject {
   final String description;
   final bool required;
   final List<String>? choices;
-  final dynamic value;
+   dynamic value;
   final List<ConfigObject>? children;
 
   ConfigObject({
