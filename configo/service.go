@@ -34,6 +34,12 @@ func (manager *configManagerImpl) updateConfig(ctx context.Context, req *UpdateC
 		logger.Error(ctx, "failed to save config: %v", err)
 		return NewInternalServerErr("failed to save config, Err: %v", err)
 	}
+	err = unmarshal(ctx, config.Value, manager.registeredConfigs[req.Id])
+	if err != nil {
+		logger.Error(ctx, "failed to unmarshal config: %v", err)
+		return ErrInvalidConfig
+	}
+	logger.Info(ctx, "config updated successfully: %v", req.Id)
 	return nil
 }
 

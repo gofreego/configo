@@ -4,6 +4,13 @@ import (
 	"context"
 	"net/http"
 	"time"
+
+	"github.com/gofreego/goutils/logger"
+)
+
+const (
+	// DefaultConfigRefreshInSecs is the default time in seconds after which the config manager will refresh the configs.
+	DefaultConfigRefreshInSecs = 10
 )
 
 type registeredConfigsMap map[string]config
@@ -26,7 +33,32 @@ func newConfigManagerImpl(ctx context.Context, cfg *ConfigManagerConfig, reposit
 	if err != nil {
 		return nil, err
 	}
+	go manager.refreshConfigs(ctx)
 	return manager, nil
+}
+
+func (manager *configManagerImpl) refreshConfigs(ctx context.Context) {
+	for {
+		if manager.config.ConfigRefreshInSecs == 0 {
+			manager.config.ConfigRefreshInSecs = DefaultConfigRefreshInSecs
+		}
+		logger.Debug(ctx, "refreshing configs after %v seconds", manager.config.ConfigRefreshInSecs)
+		time.Sleep(time.Duration(manager.config.ConfigRefreshInSecs) * time.Second)
+		for key, cfg := range manager.registeredConfigs {
+			value, err := manager.repository.GetConfig(ctx, key)
+			if err != nil {
+				continue
+			}
+			if value == nil {
+				continue
+			}
+			err = unmarshal(ctx, value.Value, cfg)
+			if err != nil {
+				continue
+			}
+		}
+	}
+
 }
 
 // RegisterConfig will register config and setup a UI for it. It will also validate the config.
@@ -52,22 +84,20 @@ func (manager *configManagerImpl) RegisterConfig(ctx context.Context, cfg config
 			UpdatedAt: time.Now().UnixMilli(),
 			CreatedAt: time.Now().UnixMilli(),
 		}
-
 		if err := manager.repository.SaveConfig(ctx, &value); err != nil {
 			return err
 		}
+	} else {
+		// if config is present in the repository, unmarshal it
+		err = unmarshal(ctx, value.Value, cfg)
+		if err != nil {
+			return err
+		}
 	}
+
 	manager.addConfigToMap(ctx, cfg)
 	// save the config in manager
 	return nil
-}
-
-func (manager *configManagerImpl) Get(ctx context.Context, cfg config) error {
-	dbCfg, err := manager.repository.GetConfig(ctx, cfg.Key())
-	if err != nil {
-		return err
-	}
-	return unmarshal(ctx, dbCfg.Value, cfg)
 }
 
 // RegisterRoute registers routes for the configuration manager.

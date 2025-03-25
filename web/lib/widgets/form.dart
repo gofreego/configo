@@ -147,7 +147,7 @@ class ConfigFormWidgetState extends State<ConfigFormWidget> {
             labelText: config.name,
             border: OutlineInputBorder(),
           ),
-          onChanged: (value) => formValues[config.name] = value,
+          onChanged: (value) => config.value = value,
         );
       case ConfigType.bigText:
         return TextFormField(
@@ -158,12 +158,12 @@ class ConfigFormWidgetState extends State<ConfigFormWidget> {
           ),
           minLines: 3,
           maxLines: 5,
-          onChanged: (value) => formValues[config.name] = value,
+          onChanged: (value) => config.value = value,
         );
       case ConfigType.number:
         return TextFormField(
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          initialValue: config.value ?? '',
+          initialValue: config.value == null ? '' : config.value.toString(),
           decoration: InputDecoration(
             labelText: config.name,
             border: OutlineInputBorder(),
@@ -174,7 +174,8 @@ class ConfigFormWidgetState extends State<ConfigFormWidget> {
             ), // Only allows numbers and a single decimal point
           ],
           onChanged: (value) {
-            formValues[config.name] = num.tryParse(value) ?? 0;
+            //convert to float
+            config.value = value.isEmpty ? null : double.parse(value);
           },
         );
 
@@ -182,11 +183,11 @@ class ConfigFormWidgetState extends State<ConfigFormWidget> {
         return SwitchListTile(
           title: Text(config.name),
           value: config.value ?? false,
-          onChanged: (value) => setState(() => formValues[config.name] = value),
+          onChanged: (value) => config.value = value,
         );
       case ConfigType.choice:
         return DropdownButtonFormField<String>(
-          value: config.value,
+          value: config.value ?? (config.value == "" ? null : ''),
           decoration: InputDecoration(
             labelText: config.name,
             border: OutlineInputBorder(),
@@ -198,13 +199,13 @@ class ConfigFormWidgetState extends State<ConfigFormWidget> {
                         DropdownMenuItem(value: choice, child: Text(choice)),
                   )
                   .toList(),
-          onChanged: (value) => setState(() => formValues[config.name] = value),
+          onChanged: (value) => config.value = value,
         );
       case ConfigType.json:
         return JsonEditorWidget(
           name: config.name,
           initialValue: config.value ?? '',
-          onChanged: (value) => {formValues[config.name] = value},
+          onChanged: (value) => {config.value = value},
         );
       default:
         return const SizedBox.shrink();

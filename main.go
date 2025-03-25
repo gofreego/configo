@@ -60,6 +60,15 @@ func getRegistar(router gin.IRouter) configo.RouteRegistrar {
 	}
 }
 
+type RepositoryConfig struct {
+	Name string `name:"name" type:"choice" description:"Name of the repository" required:"true" choices:"memory,redis"`
+}
+
+// Key implements configo.config.
+func (r *RepositoryConfig) Key() string {
+	return "Repository Config"
+}
+
 func main() {
 	ctx := context.Background()
 	configo, err := configo.NewConfigManager(ctx, &configo.ConfigManagerConfig{
@@ -69,7 +78,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+	var repoConfig RepositoryConfig = RepositoryConfig{
+		Name: "memory",
+	}
+	err = configo.RegisterConfig(ctx, &repoConfig)
+	if err != nil {
+		logger.Panic(ctx, "%v", err)
+	}
 	router := gin.New()
 	group := router.Group("/myservice")
 	err = configo.RegisterRoute(ctx, getRegistar(group))

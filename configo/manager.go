@@ -69,13 +69,14 @@ type config interface {
 }
 
 type ConfigManagerConfig struct {
-	ServiceName        string `name:"service_name" type:"string" description:"service name" required:"true"`
-	ServiceDescription string `name:"service_description" type:"bigText" description:"service description" required:"false"`
+	ServiceName         string `name:"service_name" type:"string" description:"service name" required:"true"`
+	ServiceDescription  string `name:"service_description" type:"bigText" description:"This config is to update the description of this service" required:"false"`
+	ConfigRefreshInSecs int    `name:"config_refresh_in_secs" type:"number" description:"config refresh in seconds" required:"false"`
 }
 
 func (c *ConfigManagerConfig) withDefault() {
 	if c.ServiceName == "" {
-		c.ServiceName = "config-manager"
+		c.ServiceName = "Config Manager Service"
 	}
 }
 
@@ -88,8 +89,6 @@ type ConfigManager interface {
 	RegisterConfig(ctx context.Context, cfg config) error
 	// RegisterRoute will register the necesory endpoints for the configuration manager. using the provided RouteRegistrar.
 	RegisterRoute(ctx context.Context, registerFunc RouteRegistrar) error
-	// Get will return the configuration for the given key. It will return an error if the configuration is not found. It expects the pointer to the config object which implements config interface.
-	Get(ctx context.Context, cfg config) error
 }
 
 func NewConfigManager(ctx context.Context, cfg *ConfigManagerConfig, repo Repository) (ConfigManager, error) {
