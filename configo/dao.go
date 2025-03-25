@@ -65,7 +65,7 @@ func (co ConfigObject) Validate() error {
 			}
 
 		default:
-			return customerrors.BAD_REQUEST_ERROR("config %s has invalid type %s", co.Name, co.Type)
+			return customerrors.BAD_REQUEST_ERROR("config %s has invalid type %s, Expected : string,json,boolean,number,choice,parent,bigText", co.Name, co.Type)
 		}
 	}
 

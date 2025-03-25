@@ -60,8 +60,14 @@ func getRegistar(router gin.IRouter) configo.RouteRegistrar {
 	}
 }
 
+type States struct {
+	States map[string]string `json:"states"`
+}
+
 type RepositoryConfig struct {
-	Name string `name:"name" type:"choice" description:"Name of the repository" required:"true" choices:"memory,redis"`
+	Name     string `name:"name" type:"choice" description:"Name of the repository" required:"true" choices:"memory,redis"`
+	IsActive bool   `name:"isActive" type:"boolean" description:"Is the repository active" required:"false"`
+	States   States `name:"statesMap" type:"json" description:"Map of states" required:"false"`
 }
 
 // Key implements configo.config.
