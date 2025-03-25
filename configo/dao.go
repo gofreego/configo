@@ -43,9 +43,9 @@ func (co ConfigObject) Validate() error {
 				return customerrors.BAD_REQUEST_ERROR("config %s has invalid value type %T, Expect: boolean", co.Name, co.Value)
 			}
 		case CONFIG_TYPE_JSON:
-			if _, ok := co.Value.(map[string]any); !ok {
-				return customerrors.BAD_REQUEST_ERROR("config %s has invalid value type %T, Expect: json", co.Name, co.Value)
-			}
+			// if _, ok := co.Value.(map[string]any); !ok {
+			// 	return customerrors.BAD_REQUEST_ERROR("config %s has invalid value type %T, Expect: json", co.Name, co.Value)
+			// }
 
 		case CONFIG_TYPE_CHOICE:
 			if _, ok := co.Value.(string); !ok {

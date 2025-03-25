@@ -92,6 +92,17 @@ func main() {
 		logger.Panic(ctx, "%v", err)
 	}
 	router := gin.New()
+	router.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	})
 	group := router.Group("/myservice")
 	err = configo.RegisterRoute(ctx, getRegistar(group))
 	if err != nil {
