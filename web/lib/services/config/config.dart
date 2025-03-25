@@ -61,7 +61,7 @@ class ConfigService extends BaseAPIService {
   ) async {
     final String url = '${BaseAPIService.BASE_URL}/configo/config';
 
-    final response = await http.patch(
+    final response = await http.post(
       Uri.parse(url),
       headers: BaseAPIService.getHeaders(),
       body: json.encode(
