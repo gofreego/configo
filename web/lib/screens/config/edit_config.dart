@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:web/models/config/object.dart';
-import 'package:web/screens/config/form.dart';
+import 'package:web/widgets/form.dart';
 import 'package:web/services/config/config.dart';
 import 'package:web/widgets/error.dart';
 
@@ -28,8 +28,7 @@ class _ConfigFormState extends State<ConfigForm> {
         configs = res.data!.configs ?? [];
         error = res.error;
       });
-    } on Exception catch (e) {
-      print(e);
+    } on Exception catch (_) {
       setState(() {
         isLoading = false;
         error = "An error occurred. Please try again.";
@@ -50,13 +49,12 @@ class _ConfigFormState extends State<ConfigForm> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text("Configs updated successfully"),
-              backgroundColor: Colors.green,
+              backgroundColor: Color.fromARGB(255, 42, 95, 44),
             ),
           );
         }
       });
-    } on Exception catch (e) {
-      print(e);
+    } on Exception catch (_) {
       setState(() {
         isLoading = false;
         error = "An error occurred. Please try again.";
@@ -86,12 +84,7 @@ class _ConfigFormState extends State<ConfigForm> {
               color: Theme.of(context).primaryColor,
             ),
           ),
-          content: Text(
-            content,
-            style: TextStyle(
-              fontSize: 16,
-            ),
-          ),
+          content: Text(content, style: TextStyle(fontSize: 16)),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -101,7 +94,7 @@ class _ConfigFormState extends State<ConfigForm> {
               child: const Text(
                 'Yes',
                 style: TextStyle(
-                  color: Colors.green,
+                  color: Color.fromARGB(255, 43, 100, 45),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -113,7 +106,7 @@ class _ConfigFormState extends State<ConfigForm> {
               child: const Text(
                 'No',
                 style: TextStyle(
-                  color: Colors.red,
+                  color: Color.fromARGB(255, 146, 13, 4),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -123,7 +116,7 @@ class _ConfigFormState extends State<ConfigForm> {
       },
     );
   }
-   
+
   onCancel() {
     widget.onCancel();
   }

@@ -10,12 +10,12 @@ import (
 
 func (manager *configManagerImpl) updateConfig(ctx context.Context, req *UpdateConfigRequest) error {
 
-	if manager.registeredConfigs[req.Key] == nil {
-		logger.Error(ctx, "config not registered: %v", req.Key)
+	if manager.registeredConfigs[req.Id] == nil {
+		logger.Error(ctx, "config not registered: %v", req.Id)
 		return ErrConfigNotFound
 	}
 
-	config, err := manager.repository.GetConfig(ctx, req.Key)
+	config, err := manager.repository.GetConfig(ctx, req.Id)
 	if err != nil {
 		logger.Error(ctx, "failed to get config: %v", err)
 		return NewInternalServerErr("failed to get config, Err: %v", err)

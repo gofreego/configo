@@ -142,7 +142,7 @@ class ConfigFormWidgetState extends State<ConfigFormWidget> {
     switch (config.type) {
       case ConfigType.string:
         return TextFormField(
-          initialValue: formValues[config.name] ?? '',
+          initialValue: config.value ?? '',
           decoration: InputDecoration(
             labelText: config.name,
             border: OutlineInputBorder(),
@@ -151,7 +151,7 @@ class ConfigFormWidgetState extends State<ConfigFormWidget> {
         );
       case ConfigType.bigText:
         return TextFormField(
-          initialValue: formValues[config.name] ?? '',
+          initialValue: config.value ?? '',
           decoration: InputDecoration(
             labelText: config.name,
             border: OutlineInputBorder(),
@@ -163,7 +163,7 @@ class ConfigFormWidgetState extends State<ConfigFormWidget> {
       case ConfigType.number:
         return TextFormField(
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          initialValue: formValues[config.name]?.toString() ?? '',
+          initialValue: config.value ?? '',
           decoration: InputDecoration(
             labelText: config.name,
             border: OutlineInputBorder(),
@@ -181,12 +181,12 @@ class ConfigFormWidgetState extends State<ConfigFormWidget> {
       case ConfigType.boolean:
         return SwitchListTile(
           title: Text(config.name),
-          value: formValues[config.name] ?? false,
+          value: config.value ?? false,
           onChanged: (value) => setState(() => formValues[config.name] = value),
         );
       case ConfigType.choice:
         return DropdownButtonFormField<String>(
-          value: formValues[config.name],
+          value: config.value,
           decoration: InputDecoration(
             labelText: config.name,
             border: OutlineInputBorder(),
@@ -201,7 +201,11 @@ class ConfigFormWidgetState extends State<ConfigFormWidget> {
           onChanged: (value) => setState(() => formValues[config.name] = value),
         );
       case ConfigType.json:
-        return JsonEditorWidget(name: config.name);
+        return JsonEditorWidget(
+          name: config.name,
+          initialValue: config.value ?? '',
+          onChanged: (value) => {formValues[config.name] = value},
+        );
       default:
         return const SizedBox.shrink();
     }

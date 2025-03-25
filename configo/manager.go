@@ -34,7 +34,7 @@ const (
 	// CONFIG_TYPE_JSON is the type for json configuration, it will show a textarea on ui which will have json formatting.
 	CONFIG_TYPE_JSON ConfigType = "json"
 	// CONFIG_TYPE_FLOAT is the type for float configuration, it will show a number input on ui.
-	CONFIG_TYPE_BIG_TEXT ConfigType = "big_text"
+	CONFIG_TYPE_BIG_TEXT ConfigType = "bigText"
 	// CONFIG_TYPE_CHOICE is the type for choice configuration, it will show a dropdown on ui and it should have type string.
 	CONFIG_TYPE_CHOICE ConfigType = "choice"
 	//CONFIG_TYPE_PARENT
@@ -70,7 +70,7 @@ type config interface {
 
 type ConfigManagerConfig struct {
 	ServiceName        string `name:"service_name" type:"string" description:"service name" required:"true"`
-	ServiceDescription string `name:"service_description" type:"big_text" description:"service description" required:"false"`
+	ServiceDescription string `name:"service_description" type:"bigText" description:"service description" required:"false"`
 }
 
 func (c *ConfigManagerConfig) withDefault() {

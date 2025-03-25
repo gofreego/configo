@@ -99,8 +99,9 @@ func (c *configManagerImpl) handleSaveConfig(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	if cfgUpdateRequest.Key == "" {
-		response.WriteErrorV2(r.Context(), w, customerrors.BAD_REQUEST_ERROR("config not registered or invalid config key"))
+	err = cfgUpdateRequest.Validate()
+	if err != nil {
+		response.WriteErrorV2(r.Context(), w, err)
 		return
 	}
 

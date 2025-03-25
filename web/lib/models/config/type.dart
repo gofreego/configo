@@ -13,7 +13,7 @@ extension ConfigTypeExtension on ConfigType {
         return ConfigType.boolean;
       case 'json':
         return ConfigType.json;
-      case 'big_text':
+      case 'bigText':
         return ConfigType.bigText;
       case 'choice':
         return ConfigType.choice;
