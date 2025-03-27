@@ -21,45 +21,31 @@ class _ConfigFormState extends State<ConfigForm> {
     setState(() {
       isLoading = true;
     });
-    try {
-      var res = await ConfigService().getConfig(widget.id);
-      setState(() {
-        isLoading = false;
-        configs = res.data!.configs ?? [];
-        error = res.error;
-      });
-    } on Exception catch (_) {
-      setState(() {
-        isLoading = false;
-        error = "An error occurred. Please try again.";
-      });
-    }
+    var res = await ConfigService().getConfig(widget.id);
+    setState(() {
+      isLoading = false;
+      configs = res.data!.configs ?? [];
+      error = res.error;
+    });
   }
 
   void saveConfig() async {
     setState(() {
       isLoading = true;
     });
-    try {
-      var res = await ConfigService().updateConfig(widget.id, configs);
-      setState(() {
-        isLoading = false;
-        error = res.error;
-        if (res.error == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Configs updated successfully"),
-              backgroundColor: Color.fromARGB(255, 42, 95, 44),
-            ),
-          );
-        }
-      });
-    } on Exception catch (_) {
-      setState(() {
-        isLoading = false;
-        error = "An error occurred. Please try again.";
-      });
-    }
+    var res = await ConfigService().updateConfig(widget.id, configs);
+    setState(() {
+      isLoading = false;
+      error = res.error;
+      if (res.error == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Configs updated successfully"),
+            backgroundColor: Color.fromARGB(255, 42, 95, 44),
+          ),
+        );
+      }
+    });
   }
 
   @override

@@ -21,19 +21,12 @@ class _ListConfigScreenState extends State<ListConfigScreen> {
     setState(() {
       isLoading = true;
     });
-    try {
-      var res = await ConfigService().getConfigMetadata();
-      setState(() {
-        isLoading = false;
-        error = res.error;
-        metadata = res.data;
-      });
-    } on Exception catch (_) {
-      setState(() {
-        isLoading = false;
-        error = "An error occurred. Please try again later.";
-      });
-    }
+    var res = await ConfigService().getConfigMetadata();
+    setState(() {
+      isLoading = false;
+      error = res.error;
+      metadata = res.data;
+    });
   }
 
   @override
