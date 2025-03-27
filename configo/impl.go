@@ -3,7 +3,6 @@ package configo
 import (
 	"context"
 	"net/http"
-	"reflect"
 	"time"
 
 	"github.com/gofreego/configo/configo/configs"
@@ -11,6 +10,7 @@ import (
 	"github.com/gofreego/configo/configo/internal/parser"
 	"github.com/gofreego/configo/configo/internal/repository"
 	"github.com/gofreego/configo/configo/internal/service"
+	"github.com/gofreego/configo/configo/internal/utils"
 	"github.com/gofreego/configo/configo/models"
 )
 
@@ -46,8 +46,7 @@ func (manager *ConfigManagerImpl) RegisterConfig(ctx context.Context, cfg any) e
 	if err != nil {
 		return err
 	}
-
-	configName := reflect.TypeOf(cfg).Name()
+	configName := utils.GetNameOfTheObject(cfg)
 	// check if config is already present in the repository
 	value, err := manager.repository.GetConfig(ctx, configName)
 	if err != nil {

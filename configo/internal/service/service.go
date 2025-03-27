@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"encoding/json"
-	"reflect"
 	"time"
 
 	"github.com/gofreego/configo/configo/configs"
@@ -11,6 +10,7 @@ import (
 	"github.com/gofreego/configo/configo/internal/models"
 	"github.com/gofreego/configo/configo/internal/parser"
 	"github.com/gofreego/configo/configo/internal/repository"
+	"github.com/gofreego/configo/configo/internal/utils"
 	"github.com/gofreego/goutils/logger"
 )
 
@@ -135,6 +135,6 @@ func (manager *Service) GetConfigsMetadata(_ context.Context) (*models.ConfigMet
 }
 
 func (manager *Service) AddConfigToMap(_ context.Context, cfg any) {
-	configName := reflect.TypeOf(cfg).Name()
+	configName := utils.GetNameOfTheObject(cfg)
 	manager.registeredConfigs[configName] = cfg
 }
