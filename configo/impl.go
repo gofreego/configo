@@ -18,7 +18,6 @@ type ConfigManagerImpl struct {
 	repository repository.Repository
 	service    *service.Service
 	handler    *handlers.Handler
-	config     *configs.ConfigManagerConfig
 }
 
 func newConfigManagerImpl(ctx context.Context, cfg *configs.ConfigManagerConfig, repository repository.Repository) (*ConfigManagerImpl, error) {
@@ -29,12 +28,11 @@ func newConfigManagerImpl(ctx context.Context, cfg *configs.ConfigManagerConfig,
 	}
 	manager := &ConfigManagerImpl{
 		repository: repository,
-		config:     cfg,
 		service:    service,
 		handler:    handlers.NewHandler(service),
 	}
 
-	err = manager.RegisterConfig(ctx, manager.config)
+	err = manager.RegisterConfig(ctx, cfg)
 	if err != nil {
 		return nil, err
 	}
