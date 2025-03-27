@@ -14,19 +14,19 @@ import (
 	"github.com/gofreego/configo/configo/models"
 )
 
-type ConfigManagerImpl struct {
+type configManagerImpl struct {
 	repository repository.Repository
 	service    *service.Service
 	handler    *handlers.Handler
 }
 
-func newConfigManagerImpl(ctx context.Context, cfg *configs.ConfigManagerConfig, repository repository.Repository) (*ConfigManagerImpl, error) {
+func newConfigManagerImpl(ctx context.Context, cfg *configs.ConfigManagerConfig, repository repository.Repository) (*configManagerImpl, error) {
 	cfg.WithDefault()
 	service, err := service.NewService(ctx, cfg, repository)
 	if err != nil {
 		return nil, err
 	}
-	manager := &ConfigManagerImpl{
+	manager := &configManagerImpl{
 		repository: repository,
 		service:    service,
 		handler:    handlers.NewHandler(service),
@@ -40,7 +40,7 @@ func newConfigManagerImpl(ctx context.Context, cfg *configs.ConfigManagerConfig,
 }
 
 // RegisterConfig will register config and setup a UI for it. It will also validate the config.
-func (manager *ConfigManagerImpl) RegisterConfig(ctx context.Context, cfg any) error {
+func (manager *configManagerImpl) RegisterConfig(ctx context.Context, cfg any) error {
 	// validate config
 	cfgStr, err := parser.Marshal(ctx, cfg)
 	if err != nil {
@@ -80,7 +80,7 @@ func (manager *ConfigManagerImpl) RegisterConfig(ctx context.Context, cfg any) e
 
 // RegisterRoute registers routes for the configuration manager.
 // register routes with /configs/* endpoints
-func (c *ConfigManagerImpl) RegisterRoute(ctx context.Context, registerFunc RouteRegistrar) error {
+func (c *configManagerImpl) RegisterRoute(ctx context.Context, registerFunc RouteRegistrar) error {
 
 	//setup swagger
 	if err := registerFunc(http.MethodGet, "/configo/swagger/*any", c.handler.Swagger); err != nil {
