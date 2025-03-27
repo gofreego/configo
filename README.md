@@ -151,12 +151,6 @@ http://localhost:8085/your-service/configo/swagger/index.html
 ## Contributing
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-
-
-
-
-## Controbute
-
 ### Installation
 #### Prerequisites
 * Go 1.16 or later
