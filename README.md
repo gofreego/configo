@@ -16,6 +16,9 @@ Configo provides a centralized configuration management solution with the follow
 
 In simple words you just need to create your configuration objects and implement a repository interface to save configs in your favorite storage. It will automatically create a UI to manage that configurations. it will update automatically your registered configs if there is any change.
 
+
+![Configo Logo](assets/example%20screenshot.png)
+
 ## How to use
 
 ### Integration Guide
