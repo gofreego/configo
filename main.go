@@ -72,6 +72,19 @@ type RepositoryConfig struct {
 	States   States `name:"statesMap" type:"json" description:"Map of states" required:"false"`
 }
 
+type KYCConfig struct {
+	IsKYCEnabled bool `name:"isKycEnabled" type:"boolean" description:"Is KYC enabled" required:"true"`
+}
+
+type InvoiceConfig struct {
+	IsInvoiceEnabled bool `name:"isInvoiceEnabled" type:"boolean" description:"Is Invoice enabled" required:"true"`
+}
+
+type ServiceConfig struct {
+	KYCConfig     KYCConfig     `name:"KycConfig" type:"parent" description:"KYC Configuration"`
+	InvoiceConfig InvoiceConfig `name:"InvoiceConfig" type:"parent" description:"Invoice Configuration"`
+}
+
 // Key implements configo.config.
 func (r *RepositoryConfig) Key() string {
 	return "Repository Config"
@@ -90,6 +103,18 @@ func main() {
 		Name: "memory",
 	}
 	err = configo.RegisterConfig(ctx, &repoConfig)
+	if err != nil {
+		logger.Panic(ctx, "%v", err)
+	}
+	var serviceConfig ServiceConfig = ServiceConfig{
+		KYCConfig: KYCConfig{
+			IsKYCEnabled: true,
+		},
+		InvoiceConfig: InvoiceConfig{
+			IsInvoiceEnabled: true,
+		},
+	}
+	err = configo.RegisterConfig(ctx, &serviceConfig)
 	if err != nil {
 		logger.Panic(ctx, "%v", err)
 	}

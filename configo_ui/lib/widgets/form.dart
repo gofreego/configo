@@ -128,7 +128,7 @@ class ConfigFormWidgetState extends State<ConfigFormWidget> {
       case ConfigType.json:
         return maxWidth > 400 ? 600 : maxWidth * 0.9;
       case ConfigType.boolean:
-        return 200;
+        return 300;
       case ConfigType.number:
         return 200; 
       default:
