@@ -1,4 +1,4 @@
-package configo
+package models
 
 import "github.com/gofreego/goutils/customerrors"
 
@@ -26,4 +26,18 @@ func (req *UpdateConfigRequest) Validate() error {
 
 type GetConfigResponse struct {
 	Configs []ConfigObject `json:"configs"`
+}
+
+type ServiceInfo struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+type ConfigInfo struct {
+	ConfigKeys []string `json:"configKeys"`
+}
+
+type ConfigMetadataResponse struct {
+	ServiceInfo ServiceInfo `json:"serviceInfo"`
+	ConfigInfo  ConfigInfo  `json:"configInfo"`
 }

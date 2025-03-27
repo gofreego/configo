@@ -5,6 +5,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gofreego/configo/configo/configs"
+	"github.com/gofreego/configo/configo/internal/errors"
+	"github.com/gofreego/configo/configo/internal/parser"
+	"github.com/gofreego/configo/configo/internal/repository"
+	"github.com/gofreego/configo/configo/models"
 	"github.com/gofreego/goutils/logger"
 )
 
@@ -15,15 +20,15 @@ const (
 
 type registeredConfigsMap map[string]config
 
-type configManagerImpl struct {
-	repository        Repository
-	config            *ConfigManagerConfig
+type ConfigManagerImpl struct {
+	repository        repository.Repository
+	config            *configs.ConfigManagerConfig
 	registeredConfigs registeredConfigsMap
 }
 
-func newConfigManagerImpl(ctx context.Context, cfg *ConfigManagerConfig, repository Repository) (*configManagerImpl, error) {
-	cfg.withDefault()
-	manager := &configManagerImpl{
+func newConfigManagerImpl(ctx context.Context, cfg *configs.ConfigManagerConfig, repository repository.Repository) (*ConfigManagerImpl, error) {
+	cfg.WithDefault()
+	manager := &ConfigManagerImpl{
 		repository:        repository,
 		config:            cfg,
 		registeredConfigs: make(registeredConfigsMap),
@@ -37,7 +42,7 @@ func newConfigManagerImpl(ctx context.Context, cfg *ConfigManagerConfig, reposit
 	return manager, nil
 }
 
-func (manager *configManagerImpl) refreshConfigs(ctx context.Context) {
+func (manager *ConfigManagerImpl) refreshConfigs(ctx context.Context) {
 	for {
 		if manager.config.ConfigRefreshInSecs == 0 {
 			manager.config.ConfigRefreshInSecs = DefaultConfigRefreshInSecs
@@ -52,7 +57,7 @@ func (manager *configManagerImpl) refreshConfigs(ctx context.Context) {
 			if value == nil {
 				continue
 			}
-			err = unmarshal(ctx, value.Value, cfg)
+			err = parser.Unmarshal(ctx, value.Value, cfg)
 			if err != nil {
 				continue
 			}
@@ -62,22 +67,22 @@ func (manager *configManagerImpl) refreshConfigs(ctx context.Context) {
 }
 
 // RegisterConfig will register config and setup a UI for it. It will also validate the config.
-func (manager *configManagerImpl) RegisterConfig(ctx context.Context, cfg config) error {
+func (manager *ConfigManagerImpl) RegisterConfig(ctx context.Context, cfg config) error {
 	// validate config
-	cfgStr, err := marshal(ctx, cfg)
+	cfgStr, err := parser.Marshal(ctx, cfg)
 	if err != nil {
 		return err
 	}
 
 	// check if config is already present in the repository
 	value, err := manager.repository.GetConfig(ctx, cfg.Key())
-	if err != nil && err != ErrConfigNotFound {
+	if err != nil && err != errors.ErrConfigNotFound {
 		return err
 	}
 
 	// if config is not present in the repository, save it
 	if value == nil {
-		var value Config = Config{
+		var value models.Config = models.Config{
 			Key:       cfg.Key(),
 			Value:     cfgStr,
 			UpdatedBy: "",
@@ -89,7 +94,7 @@ func (manager *configManagerImpl) RegisterConfig(ctx context.Context, cfg config
 		}
 	} else {
 		// if config is present in the repository, unmarshal it
-		err = unmarshal(ctx, value.Value, cfg)
+		err = parser.Unmarshal(ctx, value.Value, cfg)
 		if err != nil {
 			return err
 		}
@@ -102,7 +107,7 @@ func (manager *configManagerImpl) RegisterConfig(ctx context.Context, cfg config
 
 // RegisterRoute registers routes for the configuration manager.
 // register routes with /configs/* endpoints
-func (c *configManagerImpl) RegisterRoute(ctx context.Context, registerFunc RouteRegistrar) error {
+func (c *ConfigManagerImpl) RegisterRoute(ctx context.Context, registerFunc RouteRegistrar) error {
 
 	//setup swagger
 	if err := registerFunc(http.MethodGet, "/configo/swagger/*any", c.handleSwagger); err != nil {

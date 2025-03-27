@@ -1,4 +1,4 @@
-package configo
+package parser
 
 import (
 	"context"
@@ -6,10 +6,6 @@ import (
 )
 
 type TestConfig struct {
-}
-
-func (t *TestConfig) Key() string {
-	return "test-config"
 }
 
 type TestConfigChild struct {
@@ -21,16 +17,12 @@ type TestConfig1 struct {
 	Child TestConfigChild `name:"child" type:"parent" description:"child test config"`
 }
 
-func (t *TestConfig1) Key() string {
-	return "test-config"
-}
-
 func Test_marshal(t *testing.T) {
 	ctx := context.Background()
 
 	type args struct {
 		ctx context.Context
-		cfg config
+		cfg any
 	}
 	tests := []struct {
 		name    string
@@ -64,7 +56,7 @@ func Test_marshal(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := marshal(tt.args.ctx, tt.args.cfg)
+			got, err := Marshal(tt.args.ctx, tt.args.cfg)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("marshal() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -80,7 +72,7 @@ func Test_unmarshal(t *testing.T) {
 	type args struct {
 		ctx   context.Context
 		value string
-		cfg   config
+		cfg   any
 	}
 	tests := []struct {
 		name    string
@@ -121,7 +113,7 @@ func Test_unmarshal(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := unmarshal(tt.args.ctx, tt.args.value, tt.args.cfg); (err != nil) != tt.wantErr {
+			if err := Unmarshal(tt.args.ctx, tt.args.value, tt.args.cfg); (err != nil) != tt.wantErr {
 				t.Errorf("unmarshal() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

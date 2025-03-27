@@ -1,9 +1,9 @@
-package configo
+package utils
 
 import "path"
 
 // getContentType determines the MIME type based on the file extension
-func getContentType(filePath string) string {
+func GetContentType(filePath string) string {
 	ext := path.Ext(filePath)
 	switch ext {
 	case ".html":

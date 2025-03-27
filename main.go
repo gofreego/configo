@@ -6,6 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gofreego/configo/configo"
+	"github.com/gofreego/configo/configo/configs"
+	"github.com/gofreego/configo/configo/models"
 	_ "github.com/gofreego/configo/docs" // Import generated docs
 	"github.com/gofreego/goutils/cache"
 	"github.com/gofreego/goutils/cache/memory"
@@ -34,12 +36,12 @@ func NewRepo() *Repo {
 	}
 }
 
-func (r *Repo) SaveConfig(ctx context.Context, cfg *configo.Config) error {
+func (r *Repo) SaveConfig(ctx context.Context, cfg *models.Config) error {
 	return r.cache.Set(ctx, cfg.Key, cfg)
 }
 
-func (r *Repo) GetConfig(ctx context.Context, key string) (*configo.Config, error) {
-	var cfg configo.Config
+func (r *Repo) GetConfig(ctx context.Context, key string) (*models.Config, error) {
+	var cfg models.Config
 	err := r.cache.GetV(ctx, key, &cfg)
 	if err != nil {
 		return nil, err
@@ -77,7 +79,7 @@ func (r *RepositoryConfig) Key() string {
 
 func main() {
 	ctx := context.Background()
-	configo, err := configo.NewConfigManager(ctx, &configo.ConfigManagerConfig{
+	configo, err := configo.NewConfigManager(ctx, &configs.ConfigManagerConfig{
 		ServiceName:        "Test Service",
 		ServiceDescription: "The Test Service is a scalable and modular system designed to facilitate automated and manual testing processes across different domains. It enables developers, QA engineers, and businesses to validate functionality, performance, security, and reliability of software applications, APIs, or user knowledge in an examination environment. The service provides a structured approach to defining, executing, and reporting tests, ensuring high quality and accuracy in results.",
 	}, NewRepo())

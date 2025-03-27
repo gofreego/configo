@@ -1,4 +1,4 @@
-package configo
+package errors
 
 import (
 	"net/http"

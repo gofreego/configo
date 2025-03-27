@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gofreego/configo/configo/internal/models"
+	"github.com/gofreego/configo/configo/internal/utils"
 	"github.com/gofreego/configo/docs"
 	"github.com/gofreego/goutils/customerrors"
 	"github.com/gofreego/goutils/response"
@@ -16,7 +18,7 @@ import (
 //go:embed static/*
 var content embed.FS
 
-func (c *configManagerImpl) handleSwagger(w http.ResponseWriter, r *http.Request) {
+func (c *ConfigManagerImpl) handleSwagger(w http.ResponseWriter, r *http.Request) {
 	docs.SwaggerInfo.BasePath = strings.Split(r.URL.Path, "/configo/swagger")[0]
 	httpSwagger.Handler()(w, r)
 }
@@ -30,7 +32,7 @@ func (c *configManagerImpl) handleSwagger(w http.ResponseWriter, r *http.Request
 // @Success 200 {string} string "UI"
 // @Failure 400 {object} any
 // @Router /configo/web/ [get]
-func (c *configManagerImpl) handleUI(w http.ResponseWriter, r *http.Request) {
+func (c *ConfigManagerImpl) handleUI(w http.ResponseWriter, r *http.Request) {
 	// Ensure the path is correct (handle root path and default file)
 	path := strings.Split(r.URL.Path, "/configo/web")
 	if len(path) < 2 {
@@ -53,7 +55,7 @@ func (c *configManagerImpl) handleUI(w http.ResponseWriter, r *http.Request) {
 		data = []byte(strings.Replace(string(data), `<base href="/">`, fmt.Sprintf(`<base href="%s">`, endpoint), 1))
 	}
 	// Determine content type and serve the file
-	w.Header().Set("Content-Type", getContentType(filePath))
+	w.Header().Set("Content-Type", utils.GetContentType(filePath))
 	w.Write(data)
 }
 
@@ -67,7 +69,7 @@ func (c *configManagerImpl) handleUI(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} GetConfigResponse
 // @Failure 400 {object} any
 // @Router /configo/config [get]
-func (c *configManagerImpl) handleGetConfig(w http.ResponseWriter, r *http.Request) {
+func (c *ConfigManagerImpl) handleGetConfig(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 	if id == "" {
 		response.WriteErrorV2(r.Context(), w, customerrors.BAD_REQUEST_ERROR("id is required in query params"))
@@ -91,8 +93,8 @@ func (c *configManagerImpl) handleGetConfig(w http.ResponseWriter, r *http.Reque
 // @Success 200 {string} string "config saved successfully"
 // @Failure 400 {object} any
 // @Router /configo/config [post]
-func (c *configManagerImpl) handleSaveConfig(w http.ResponseWriter, r *http.Request) {
-	var cfgUpdateRequest UpdateConfigRequest
+func (c *ConfigManagerImpl) handleSaveConfig(w http.ResponseWriter, r *http.Request) {
+	var cfgUpdateRequest models.UpdateConfigRequest
 	err := json.NewDecoder(r.Body).Decode(&cfgUpdateRequest)
 	if err != nil {
 		response.WriteErrorV2(r.Context(), w, customerrors.BAD_REQUEST_ERROR("failed to decode request body, Err: %s", err.Error()))
@@ -122,7 +124,7 @@ func (c *configManagerImpl) handleSaveConfig(w http.ResponseWriter, r *http.Requ
 // @Success 200 {object} configMetadataResponse
 // @Failure 400 {object} any
 // @Router /configo/metadata [get]
-func (c *configManagerImpl) handleGetConfigMetadata(w http.ResponseWriter, r *http.Request) {
+func (c *ConfigManagerImpl) handleGetConfigMetadata(w http.ResponseWriter, r *http.Request) {
 	metadata, err := c.getConfigsMetadata(r.Context())
 	if err != nil {
 		response.WriteErrorV2(r.Context(), w, err)

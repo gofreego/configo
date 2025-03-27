@@ -1,4 +1,4 @@
-package configo
+package parser
 
 import (
 	"context"
@@ -6,9 +6,40 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+
+	"github.com/gofreego/configo/configo/internal/constants"
+	"github.com/gofreego/configo/configo/internal/models"
 )
 
-func parseTags(ctx context.Context, cfg any) ([]ConfigObject, error) {
+func Marshal(ctx context.Context, cfg any) (string, error) {
+	objects, err := parseTags(ctx, cfg)
+	if err != nil {
+		return "", err
+	}
+	for _, obj := range objects {
+		if err := obj.Validate(); err != nil {
+			return "", err
+		}
+	}
+	bytes, err := json.Marshal(objects)
+	if err != nil {
+		return "", err
+	}
+	return string(bytes), err
+}
+
+func Unmarshal(ctx context.Context, value string, cfg any) error {
+	// Parse the JSON into []ConfigObject
+	var configObjects []models.ConfigObject
+	if err := json.Unmarshal([]byte(value), &configObjects); err != nil {
+		return fmt.Errorf("failed to unmarshal JSON: %w", err)
+	}
+
+	// Populate the struct with values from configObjects
+	return populateStruct(ctx, cfg, configObjects)
+}
+
+func parseTags(ctx context.Context, cfg any) ([]models.ConfigObject, error) {
 	// Get the type and value of the given config
 	cfgType := reflect.TypeOf(cfg)
 	cfgValue := reflect.ValueOf(cfg)
@@ -22,7 +53,7 @@ func parseTags(ctx context.Context, cfg any) ([]ConfigObject, error) {
 		return nil, fmt.Errorf("expected a struct, got %s", cfgType.Kind())
 	}
 
-	var configs []ConfigObject
+	var configs []models.ConfigObject
 	var err error
 	for i := 0; i < cfgType.NumField(); i++ {
 		field := cfgType.Field(i)
@@ -32,18 +63,18 @@ func parseTags(ctx context.Context, cfg any) ([]ConfigObject, error) {
 		if !value.CanInterface() {
 			continue
 		}
-		configObj := ConfigObject{
-			Name:        field.Tag.Get(string(CONFIG_TAG_NAME)),
-			Type:        ConfigType(field.Tag.Get(string(CONFIG_TAG_TYPE))),
-			Description: field.Tag.Get(string(CONFIG_TAG_DESCRIPTION)),
-			Required:    field.Tag.Get(string(CONFIG_TAG_REQUIRED)) == "true",
+		configObj := models.ConfigObject{
+			Name:        field.Tag.Get(constants.CONFIG_TAG_NAME.String()),
+			Type:        constants.ConfigType(field.Tag.Get(constants.CONFIG_TAG_TYPE.String())),
+			Description: field.Tag.Get(constants.CONFIG_TAG_DESCRIPTION.String()),
+			Required:    field.Tag.Get(constants.CONFIG_TAG_REQUIRED.String()) == "true",
 		}
 
-		if choices := field.Tag.Get(string(CONFIG_TAG_CHOICES)); choices != "" {
+		if choices := field.Tag.Get(constants.CONFIG_TAG_CHOICES.String()); choices != "" {
 			configObj.Choices = parseChoices(choices)
 		}
 
-		if configObj.Type == CONFIG_TYPE_PARENT {
+		if configObj.Type == constants.CONFIG_TYPE_PARENT {
 			configObj.Childrens, err = parseTags(ctx, value.Interface())
 			if err != nil {
 				return nil, err
@@ -62,36 +93,8 @@ func parseChoices(choices string) []string {
 	return strings.Split(choices, ",")
 }
 
-func marshal(ctx context.Context, cfg any) (string, error) {
-	objects, err := parseTags(ctx, cfg)
-	if err != nil {
-		return "", err
-	}
-	for _, obj := range objects {
-		if err := obj.Validate(); err != nil {
-			return "", err
-		}
-	}
-	bytes, err := json.Marshal(objects)
-	if err != nil {
-		return "", err
-	}
-	return string(bytes), err
-}
-
-func unmarshal(ctx context.Context, value string, cfg any) error {
-	// Parse the JSON into []ConfigObject
-	var configObjects []ConfigObject
-	if err := json.Unmarshal([]byte(value), &configObjects); err != nil {
-		return fmt.Errorf("failed to unmarshal JSON: %w", err)
-	}
-
-	// Populate the struct with values from configObjects
-	return populateStruct(ctx, cfg, configObjects)
-}
-
 // populateStruct recursively sets struct field values based on parsed ConfigObject data.
-func populateStruct(ctx context.Context, cfg any, configObjects []ConfigObject) error {
+func populateStruct(ctx context.Context, cfg any, configObjects []models.ConfigObject) error {
 
 	if len(configObjects) == 0 {
 		return nil
@@ -112,7 +115,7 @@ func populateStruct(ctx context.Context, cfg any, configObjects []ConfigObject) 
 
 	for _, configObj := range configObjects {
 		// Find the field by its JSON tag name
-		field, found := findFieldByTag(cfgType, CONFIG_TAG_NAME, configObj.Name)
+		field, found := findFieldByTag(cfgType, constants.CONFIG_TAG_NAME, configObj.Name)
 		if !found {
 			continue // Ignore fields that don't match
 		}
@@ -148,7 +151,7 @@ func populateStruct(ctx context.Context, cfg any, configObjects []ConfigObject) 
 }
 
 // findFieldByTag searches for a struct field by a given tag key and value.
-func findFieldByTag(cfgType reflect.Type, tagKey ConfigTag, tagValue string) (reflect.StructField, bool) {
+func findFieldByTag(cfgType reflect.Type, tagKey constants.ConfigTag, tagValue string) (reflect.StructField, bool) {
 
 	tagKeyStr := string(tagKey)
 	for i := 0; i < cfgType.NumField(); i++ {

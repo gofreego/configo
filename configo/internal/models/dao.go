@@ -1,20 +1,25 @@
-package configo
+package models
 
 import (
 	"reflect"
 
+	"github.com/gofreego/configo/configo/internal/constants"
 	"github.com/gofreego/goutils/customerrors"
 	"github.com/gofreego/goutils/utils"
 )
 
+/*
+ConfigObject is a struct that represents a configuration object. it is used for marshalling and unmarshalling configuration objects.
+also used for rendering UI for configuration management.
+*/
 type ConfigObject struct {
-	Name        string         `json:"name"`
-	Type        ConfigType     `json:"type"`
-	Description string         `json:"description"`
-	Required    bool           `json:"required"`
-	Choices     []string       `json:"choices,omitempty"`
-	Value       any            `json:"value"`
-	Childrens   []ConfigObject `json:"children,omitempty"`
+	Name        string               `json:"name"`
+	Type        constants.ConfigType `json:"type"`
+	Description string               `json:"description"`
+	Required    bool                 `json:"required"`
+	Choices     []string             `json:"choices,omitempty"`
+	Value       any                  `json:"value"`
+	Childrens   []ConfigObject       `json:"children,omitempty"`
 }
 
 func (co ConfigObject) Validate() error {
@@ -25,29 +30,29 @@ func (co ConfigObject) Validate() error {
 
 	if co.Value != nil {
 		switch co.Type {
-		case CONFIG_TYPE_STRING, CONFIG_TYPE_BIG_TEXT:
+		case constants.CONFIG_TYPE_STRING, constants.CONFIG_TYPE_BIG_TEXT:
 			if _, ok := co.Value.(string); !ok {
 				return customerrors.BAD_REQUEST_ERROR("config %s has invalid value type %T, Expect: string", co.Name, co.Value)
 			}
 			if co.Required && co.Value == "" {
 				return customerrors.BAD_REQUEST_ERROR("config %s is required, please pass the value of type string", co.Name)
 			}
-		case CONFIG_TYPE_NUMBER:
+		case constants.CONFIG_TYPE_NUMBER:
 			typ := reflect.TypeOf(co.Value).Kind()
 			if utils.NotIn[reflect.Kind](typ, reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Float32, reflect.Float64) {
 				return customerrors.BAD_REQUEST_ERROR("config %s has invalid value type %T, Expect: number", co.Name, co.Value)
 			}
 
-		case CONFIG_TYPE_BOOLEAN:
+		case constants.CONFIG_TYPE_BOOLEAN:
 			if _, ok := co.Value.(bool); !ok {
 				return customerrors.BAD_REQUEST_ERROR("config %s has invalid value type %T, Expect: boolean", co.Name, co.Value)
 			}
-		case CONFIG_TYPE_JSON:
+		case constants.CONFIG_TYPE_JSON:
 			// if _, ok := co.Value.(map[string]any); !ok {
 			// 	return customerrors.BAD_REQUEST_ERROR("config %s has invalid value type %T, Expect: json", co.Name, co.Value)
 			// }
 
-		case CONFIG_TYPE_CHOICE:
+		case constants.CONFIG_TYPE_CHOICE:
 			if _, ok := co.Value.(string); !ok {
 				return customerrors.BAD_REQUEST_ERROR("config %s has invalid value type %T, Expect: string", co.Name, co.Value)
 			}
@@ -76,18 +81,4 @@ func (co ConfigObject) Validate() error {
 	}
 
 	return nil
-}
-
-type ServiceInfo struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-}
-
-type ConfigInfo struct {
-	ConfigKeys []string `json:"configKeys"`
-}
-
-type configMetadataResponse struct {
-	ServiceInfo ServiceInfo `json:"serviceInfo"`
-	ConfigInfo  ConfigInfo  `json:"configInfo"`
 }
