@@ -1,18 +1,20 @@
 
 ![Configo Logo](assets/logo-name.png)
 
-### Configo - Configuration Management System
-A flexible, dynamic configuration management system with a Go API backend and Flutter web interface that allows you to easily register, modify and retrieve configuration values for your services.
+### Configo - Configuration Management Library
+A flexible, dynamic configuration management library with a Go API backend and Flutter web interface that allows you to easily register, modify and retrieve configuration values for your services.
 
 ## Overview
 Configo provides a centralized configuration management solution with the following features:
 
 * Register configuration objects with validation and type information
-* Web UI for managing configurations
-* Swagger API documentation
+* Web UI will be generated automatically for managing configurations
+* Swagger API documentation for integration and other user cases
 * Automatic configuration refresh
 * Support for multiple configuration value types
 * Simple repository interface for storage backends
+
+In simple words you just need to create your configuration objects and implement a repository interface to save configs in your favorite storage. It will automatically create a UI to manage that configurations. it will update automatically your registered configs if there is any change.
 
 ## How to use
 
@@ -126,7 +128,7 @@ Configo supports the following configuration types via field tags:
 | list | List of values | List widget |
 
 
-### Web UI
+## Web UI
 Access the web UI at:
 ```
 http://localhost:8085/your-service/configo/web/
@@ -138,7 +140,7 @@ Swagger documentation is available at:
 http://localhost:8085/your-service/configo/swagger/index.html
 ```
 
-#### API Endpoints
+### API Endpoints
 * `GET /configo/metadata` - Get all configuration keys
 * `GET /configo/config?key=YOUR_KEY` - Get specific configuration
 * `POST /configo/config` - Update configuration
@@ -173,10 +175,10 @@ go mod tidy
 go run main.go
 ```
 
-License
+## License
 This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
 
-Contact
+## Contact
 For any inquiries, please contact:
 
 * Developer: https://github.com/pavanyewale
