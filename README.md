@@ -151,6 +151,8 @@ http://localhost:8085/your-service/configo/swagger/index.html
 ## Contributing
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+Note: currently this library is only for golang. If anyone is interested to contribute to have a same for java, python etc. that would be much appreciated.
+
 ### Installation
 #### Prerequisites
 * Go 1.16 or later
