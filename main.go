@@ -111,8 +111,8 @@ func main() {
 	go func() {
 		for {
 			time.Sleep(5 * time.Second)
-			bytes, _ := json.Marshal(repoConfig.States)
-			logger.Info(ctx, "States: %s", string(bytes))
+			bytes, _ := json.Marshal(repoConfig)
+			logger.Info(ctx, "repo config: %s", string(bytes))
 		}
 	}()
 

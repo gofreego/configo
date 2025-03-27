@@ -10,7 +10,6 @@ import (
 	"github.com/gofreego/configo/configo/internal/constants"
 	"github.com/gofreego/configo/configo/internal/models"
 	"github.com/gofreego/configo/configo/internal/utils"
-	"github.com/gofreego/goutils/customerrors"
 )
 
 func Marshal(ctx context.Context, cfg any) (string, error) {
@@ -85,7 +84,7 @@ func parseTags(ctx context.Context, cfg any) ([]models.ConfigObject, error) {
 			obj := value.Interface()
 			bytes, err := json.Marshal(obj)
 			if err != nil {
-				return nil, customerrors.BAD_REQUEST_ERROR("failed to marshal JSON: %v", err.Error())
+				return nil, fmt.Errorf("failed to marshal JSON: %v", err.Error())
 			}
 			configObj.Value = string(bytes)
 		} else {
@@ -150,7 +149,7 @@ func populateStruct(ctx context.Context, cfg any, configObjects []models.ConfigO
 			}
 		} else if configObj.Type == constants.CONFIG_TYPE_JSON {
 			if !utils.IsValidJsonString(configObj.Value) {
-				return customerrors.BAD_REQUEST_ERROR("config %s has invalid value type %T, Expect: json string", configObj.Name, configObj.Value)
+				return fmt.Errorf("config %s has invalid value type %T, Expect: json string", configObj.Name, configObj.Value)
 			}
 			// unmarshal the json string to struct
 			if err := json.Unmarshal([]byte(configObj.Value.(string)), fieldValue.Addr().Interface()); err != nil {
