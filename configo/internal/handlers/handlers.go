@@ -1,13 +1,14 @@
-package configo
+package handlers
 
 import (
-	"embed"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/gofreego/configo/configo/internal/models"
+	"github.com/gofreego/configo/configo/internal/service"
+	"github.com/gofreego/configo/configo/internal/ui"
 	"github.com/gofreego/configo/configo/internal/utils"
 	"github.com/gofreego/configo/docs"
 	"github.com/gofreego/goutils/customerrors"
@@ -15,10 +16,15 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-//go:embed static/*
-var content embed.FS
+type Handler struct {
+	service *service.Service
+}
 
-func (c *ConfigManagerImpl) handleSwagger(w http.ResponseWriter, r *http.Request) {
+func NewHandler(service *service.Service) *Handler {
+	return &Handler{service: service}
+}
+
+func (c *Handler) Swagger(w http.ResponseWriter, r *http.Request) {
 	docs.SwaggerInfo.BasePath = strings.Split(r.URL.Path, "/configo/swagger")[0]
 	httpSwagger.Handler()(w, r)
 }
@@ -32,7 +38,7 @@ func (c *ConfigManagerImpl) handleSwagger(w http.ResponseWriter, r *http.Request
 // @Success 200 {string} string "UI"
 // @Failure 400 {object} any
 // @Router /configo/web/ [get]
-func (c *ConfigManagerImpl) handleUI(w http.ResponseWriter, r *http.Request) {
+func (c *Handler) UI(w http.ResponseWriter, r *http.Request) {
 	// Ensure the path is correct (handle root path and default file)
 	path := strings.Split(r.URL.Path, "/configo/web")
 	if len(path) < 2 {
@@ -46,7 +52,7 @@ func (c *ConfigManagerImpl) handleUI(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Open the requested file from embedded FS
-	data, err := content.ReadFile("static" + filePath)
+	data, err := ui.GetStatic().ReadFile("static" + filePath)
 	if err != nil {
 		http.NotFound(w, r)
 		return
@@ -69,13 +75,13 @@ func (c *ConfigManagerImpl) handleUI(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} GetConfigResponse
 // @Failure 400 {object} any
 // @Router /configo/config [get]
-func (c *ConfigManagerImpl) handleGetConfig(w http.ResponseWriter, r *http.Request) {
+func (c *Handler) GetConfig(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 	if id == "" {
 		response.WriteErrorV2(r.Context(), w, customerrors.BAD_REQUEST_ERROR("id is required in query params"))
 		return
 	}
-	res, err := c.getConfigByKey(r.Context(), id)
+	res, err := c.service.GetConfigByKey(r.Context(), id)
 	if err != nil {
 		response.WriteErrorV2(r.Context(), w, err)
 		return
@@ -93,7 +99,7 @@ func (c *ConfigManagerImpl) handleGetConfig(w http.ResponseWriter, r *http.Reque
 // @Success 200 {string} string "config saved successfully"
 // @Failure 400 {object} any
 // @Router /configo/config [post]
-func (c *ConfigManagerImpl) handleSaveConfig(w http.ResponseWriter, r *http.Request) {
+func (c *Handler) SaveConfig(w http.ResponseWriter, r *http.Request) {
 	var cfgUpdateRequest models.UpdateConfigRequest
 	err := json.NewDecoder(r.Body).Decode(&cfgUpdateRequest)
 	if err != nil {
@@ -107,7 +113,7 @@ func (c *ConfigManagerImpl) handleSaveConfig(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	err = c.updateConfig(r.Context(), &cfgUpdateRequest)
+	err = c.service.UpdateConfig(r.Context(), &cfgUpdateRequest)
 	if err != nil {
 		response.WriteErrorV2(r.Context(), w, err)
 		return
@@ -124,8 +130,8 @@ func (c *ConfigManagerImpl) handleSaveConfig(w http.ResponseWriter, r *http.Requ
 // @Success 200 {object} configMetadataResponse
 // @Failure 400 {object} any
 // @Router /configo/metadata [get]
-func (c *ConfigManagerImpl) handleGetConfigMetadata(w http.ResponseWriter, r *http.Request) {
-	metadata, err := c.getConfigsMetadata(r.Context())
+func (c *Handler) GetConfigMetadata(w http.ResponseWriter, r *http.Request) {
+	metadata, err := c.service.GetConfigsMetadata(r.Context())
 	if err != nil {
 		response.WriteErrorV2(r.Context(), w, err)
 		return

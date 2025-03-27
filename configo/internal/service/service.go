@@ -1,17 +1,69 @@
-package configo
+package service
 
 import (
 	"context"
 	"encoding/json"
+	"reflect"
 	"time"
 
+	"github.com/gofreego/configo/configo/configs"
 	"github.com/gofreego/configo/configo/internal/errors"
 	"github.com/gofreego/configo/configo/internal/models"
 	"github.com/gofreego/configo/configo/internal/parser"
+	"github.com/gofreego/configo/configo/internal/repository"
 	"github.com/gofreego/goutils/logger"
 )
 
-func (manager *ConfigManagerImpl) updateConfig(ctx context.Context, req *models.UpdateConfigRequest) error {
+const (
+	// DefaultConfigRefreshInSecs is the default time in seconds after which the config manager will refresh the configs.
+	DefaultConfigRefreshInSecs = 10
+)
+
+type registeredConfigsMap map[string]any
+
+type Service struct {
+	repository        repository.Repository
+	registeredConfigs registeredConfigsMap
+	config            *configs.ConfigManagerConfig
+}
+
+func NewService(ctx context.Context, cfg *configs.ConfigManagerConfig, repo repository.Repository) (*Service, error) {
+	if cfg == nil {
+		cfg = &configs.ConfigManagerConfig{}
+	}
+	if repo == nil {
+		return nil, errors.NewInternalServerErr("repository is required, got nil")
+	}
+	s := &Service{repository: repo, config: cfg, registeredConfigs: make(registeredConfigsMap)}
+	go s.refreshConfigs(ctx)
+	return s, nil
+}
+
+func (manager *Service) refreshConfigs(ctx context.Context) {
+	for {
+		if manager.config.ConfigRefreshInSecs == 0 {
+			manager.config.ConfigRefreshInSecs = DefaultConfigRefreshInSecs
+		}
+		logger.Debug(ctx, "refreshing configs after %v seconds", manager.config.ConfigRefreshInSecs)
+		time.Sleep(time.Duration(manager.config.ConfigRefreshInSecs) * time.Second)
+		for key, cfg := range manager.registeredConfigs {
+			value, err := manager.repository.GetConfig(ctx, key)
+			if err != nil {
+				continue
+			}
+			if value == nil {
+				continue
+			}
+			err = parser.Unmarshal(ctx, value.Value, cfg)
+			if err != nil {
+				continue
+			}
+		}
+	}
+
+}
+
+func (manager *Service) UpdateConfig(ctx context.Context, req *models.UpdateConfigRequest) error {
 
 	if manager.registeredConfigs[req.Id] == nil {
 		logger.Error(ctx, "config not registered: %v", req.Id)
@@ -46,7 +98,7 @@ func (manager *ConfigManagerImpl) updateConfig(ctx context.Context, req *models.
 	return nil
 }
 
-func (manager *ConfigManagerImpl) getConfigByKey(ctx context.Context, key string) (*models.GetConfigResponse, error) {
+func (manager *Service) GetConfigByKey(ctx context.Context, key string) (*models.GetConfigResponse, error) {
 	config, err := manager.repository.GetConfig(ctx, key)
 	if err != nil {
 		logger.Error(ctx, "failed to get config: %v", err)
@@ -66,7 +118,7 @@ func (manager *ConfigManagerImpl) getConfigByKey(ctx context.Context, key string
 	return &models.GetConfigResponse{Configs: obj}, nil
 }
 
-func (manager *ConfigManagerImpl) getConfigsMetadata(_ context.Context) (*models.ConfigMetadataResponse, error) {
+func (manager *Service) GetConfigsMetadata(_ context.Context) (*models.ConfigMetadataResponse, error) {
 	keys := make([]string, 0, len(manager.registeredConfigs))
 	for k := range manager.registeredConfigs {
 		keys = append(keys, k)
@@ -82,6 +134,7 @@ func (manager *ConfigManagerImpl) getConfigsMetadata(_ context.Context) (*models
 	}, nil
 }
 
-func (manager *ConfigManagerImpl) addConfigToMap(_ context.Context, cfg config) {
-	manager.registeredConfigs[cfg.Key()] = cfg
+func (manager *Service) AddConfigToMap(_ context.Context, cfg any) {
+	configName := reflect.TypeOf(cfg).Name()
+	manager.registeredConfigs[configName] = cfg
 }
