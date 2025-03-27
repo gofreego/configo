@@ -9,6 +9,8 @@ import (
 
 	"github.com/gofreego/configo/configo/internal/constants"
 	"github.com/gofreego/configo/configo/internal/models"
+	"github.com/gofreego/configo/configo/internal/utils"
+	"github.com/gofreego/goutils/customerrors"
 )
 
 func Marshal(ctx context.Context, cfg any) (string, error) {
@@ -79,6 +81,13 @@ func parseTags(ctx context.Context, cfg any) ([]models.ConfigObject, error) {
 			if err != nil {
 				return nil, err
 			}
+		} else if configObj.Type == constants.CONFIG_TYPE_JSON {
+			obj := value.Interface()
+			bytes, err := json.Marshal(obj)
+			if err != nil {
+				return nil, customerrors.BAD_REQUEST_ERROR("failed to marshal JSON: %v", err.Error())
+			}
+			configObj.Value = string(bytes)
 		} else {
 			configObj.Value = value.Interface()
 		}
@@ -128,7 +137,7 @@ func populateStruct(ctx context.Context, cfg any, configObjects []models.ConfigO
 		}
 
 		// If the field is a struct, recursively populate it
-		if field.Type.Kind() == reflect.Struct {
+		if configObj.Type == constants.CONFIG_TYPE_PARENT {
 			var fieldValuePtr any
 			if fieldValue.Kind() == reflect.Ptr {
 				fieldValuePtr = fieldValue.Interface()
@@ -138,6 +147,14 @@ func populateStruct(ctx context.Context, cfg any, configObjects []models.ConfigO
 			err := populateStruct(ctx, fieldValuePtr, configObj.Childrens)
 			if err != nil {
 				return err
+			}
+		} else if configObj.Type == constants.CONFIG_TYPE_JSON {
+			if !utils.IsValidJsonString(configObj.Value) {
+				return customerrors.BAD_REQUEST_ERROR("config %s has invalid value type %T, Expect: json string", configObj.Name, configObj.Value)
+			}
+			// unmarshal the json string to struct
+			if err := json.Unmarshal([]byte(configObj.Value.(string)), fieldValue.Addr().Interface()); err != nil {
+				return fmt.Errorf("error unmarshalling JSON: %w", err)
 			}
 		} else {
 			// Set primitive field values based on type
@@ -177,11 +194,17 @@ func setFieldValue(field reflect.Value, value any) error {
 		} else {
 			return fmt.Errorf("expected string, got %T", value)
 		}
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		if v, ok := value.(float64); ok { // JSON numbers are decoded as float64
 			field.SetInt(int64(v))
 		} else {
 			return fmt.Errorf("expected int, got %T", value)
+		}
+	case reflect.Float32, reflect.Float64:
+		if v, ok := value.(float64); ok {
+			field.SetFloat(v)
+		} else {
+			return fmt.Errorf("expected float, got %T", value)
 		}
 	case reflect.Bool:
 		if v, ok := value.(bool); ok {
@@ -200,6 +223,12 @@ func setFieldValue(field reflect.Value, value any) error {
 		}
 		field.Set(slice)
 	default:
+		// check if value is string and valid json object if yes then unmarshal it in field
+		if v, ok := value.(string); ok {
+			if err := json.Unmarshal([]byte(v), field.Addr().Interface()); err != nil {
+				return err
+			}
+		}
 		return fmt.Errorf("unsupported field type: %s", field.Kind())
 	}
 

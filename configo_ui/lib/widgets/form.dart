@@ -225,7 +225,7 @@ class ConfigFormWidgetState extends State<ConfigFormWidget> {
       case ConfigType.json:
         return JsonEditorWidget(
           name: config.name,
-          initialValue: config.value == null ? config.value.toString() : '',
+          initialValue: config.value != null ? config.value.toString() : '',
           onChanged: (value) => {config.value = value},
         );
       default:

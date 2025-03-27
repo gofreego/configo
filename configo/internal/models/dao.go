@@ -4,6 +4,7 @@ import (
 	"reflect"
 
 	"github.com/gofreego/configo/configo/internal/constants"
+	myutils "github.com/gofreego/configo/configo/internal/utils"
 	"github.com/gofreego/goutils/customerrors"
 	"github.com/gofreego/goutils/utils"
 )
@@ -48,9 +49,9 @@ func (co ConfigObject) Validate() error {
 				return customerrors.BAD_REQUEST_ERROR("config %s has invalid value type %T, Expect: boolean", co.Name, co.Value)
 			}
 		case constants.CONFIG_TYPE_JSON:
-			// if _, ok := co.Value.(map[string]any); !ok {
-			// 	return customerrors.BAD_REQUEST_ERROR("config %s has invalid value type %T, Expect: json", co.Name, co.Value)
-			// }
+			if !myutils.IsValidJsonString(co.Value) {
+				return customerrors.BAD_REQUEST_ERROR("config %s has invalid value type %T, Expect: json string", co.Name, co.Value)
+			}
 
 		case constants.CONFIG_TYPE_CHOICE:
 			if _, ok := co.Value.(string); !ok {

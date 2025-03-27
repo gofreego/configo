@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gofreego/configo/configo"
@@ -106,6 +108,14 @@ func main() {
 	if err != nil {
 		logger.Panic(ctx, "%v", err)
 	}
+	go func() {
+		for {
+			time.Sleep(5 * time.Second)
+			bytes, _ := json.Marshal(repoConfig.States)
+			logger.Info(ctx, "States: %s", string(bytes))
+		}
+	}()
+
 	var serviceConfig ServiceConfig = ServiceConfig{
 		KYCConfig: KYCConfig{
 			IsKYCEnabled: true,

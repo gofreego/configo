@@ -11,7 +11,11 @@ func GetNameOfTheObject(obj any) string {
 	return configNames[len(configNames)-1]
 }
 
-func IsValidJsonString(str string) bool {
+func IsValidJsonString(obj any) bool {
+	str, ok := obj.(string)
+	if !ok {
+		return false
+	}
 	var js map[string]interface{}
 	return json.Unmarshal([]byte(str), &js) == nil
 }

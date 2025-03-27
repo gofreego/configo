@@ -98,7 +98,7 @@ class _JsonEditorWidgetState extends State<JsonEditorWidget> {
                 ),
                 Align(
                   alignment: Alignment.topRight,
-                  child: IconButton(
+                  child: IconButton(  
                     icon: const Icon(Icons.format_align_left),
                     onPressed: _formatJson,
                     tooltip: "Format JSON",
