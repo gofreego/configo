@@ -18,12 +18,12 @@ class GetConfigResponse {
 }
 
 class UpdateConfigRequest {
-  final String id;
+  final String key;
   final List<ConfigObject> configs;
 
-  UpdateConfigRequest({required this.id, required this.configs});
+  UpdateConfigRequest({required this.key, required this.configs});
 
   Map<String, dynamic> toJson() {
-    return {"id": id, 'configs': configs.map((e) => e.toJson()).toList()};
+    return {"key": key, 'configs': configs.map((e) => e.toJson()).toList()};
   }
 }

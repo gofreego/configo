@@ -76,12 +76,12 @@ func (c *Handler) UI(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {object} any
 // @Router /configo/config [get]
 func (c *Handler) GetConfig(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Query().Get("id")
-	if id == "" {
+	key := r.URL.Query().Get("key")
+	if key == "" {
 		response.WriteErrorV2(r.Context(), w, customerrors.BAD_REQUEST_ERROR("id is required in query params"))
 		return
 	}
-	res, err := c.service.GetConfigByKey(r.Context(), id)
+	res, err := c.service.GetConfigByKey(r.Context(), key)
 	if err != nil {
 		response.WriteErrorV2(r.Context(), w, err)
 		return

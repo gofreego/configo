@@ -161,7 +161,7 @@ class _ConfigTileState extends State<ConfigTile> {
               child:
                   isExpanded
                       ? ConfigForm(
-                        id: widget.id,
+                        configKey: widget.id,
                         onCancel: () {
                           setState(() {
                             isExpanded = false;

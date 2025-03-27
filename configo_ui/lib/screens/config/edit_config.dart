@@ -5,9 +5,9 @@ import 'package:configo_ui/services/config/config.dart';
 import 'package:configo_ui/widgets/error.dart';
 
 class ConfigForm extends StatefulWidget {
-  final String id;
+  final String configKey;
   final Function() onCancel;
-  const ConfigForm({super.key, required this.id, required this.onCancel});
+  const ConfigForm({super.key, required this.configKey, required this.onCancel});
 
   @override
   State<ConfigForm> createState() => _ConfigFormState();
@@ -21,7 +21,7 @@ class _ConfigFormState extends State<ConfigForm> {
     setState(() {
       isLoading = true;
     });
-    var res = await ConfigService().getConfig(widget.id);
+    var res = await ConfigService().getConfig(widget.configKey);
     setState(() {
       isLoading = false;
       configs = res.data!.configs ?? [];
@@ -33,7 +33,7 @@ class _ConfigFormState extends State<ConfigForm> {
     setState(() {
       isLoading = true;
     });
-    var res = await ConfigService().updateConfig(widget.id, configs);
+    var res = await ConfigService().updateConfig(widget.configKey, configs);
     setState(() {
       isLoading = false;
       error = res.error;

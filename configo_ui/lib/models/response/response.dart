@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 
 class ApiResponse<T> {
@@ -35,8 +37,8 @@ class ApiResponse<T> {
   // from dio exception
   factory ApiResponse.fromDioException(Object e) {
     try {
-      if (e is DioError && e.response != null) {
-        return ApiResponse.fromErrorJson(e.response!.data);
+      if (e is DioException && e.response != null) {
+        return ApiResponse.fromErrorJson(jsonDecode(e.response!.data));
       }
       return ApiResponse(error: "An error occurred. Please try again later.");
     } catch (e) {

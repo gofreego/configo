@@ -36,9 +36,9 @@ class ConfigService extends BaseAPIService {
     }
   }
 
-  Future<ApiResponse<GetConfigResponse>> getConfig(String id) async {
+  Future<ApiResponse<GetConfigResponse>> getConfig(String key) async {
     try {
-      final String url = '${BaseAPIService.BASE_URL}/configo/config?id=$id';
+      final String url = '${BaseAPIService.BASE_URL}/configo/config?key=$key';
       final response = await _dio.get(url);
 
       return ApiResponse.fromSuccessJson(
@@ -51,12 +51,12 @@ class ConfigService extends BaseAPIService {
   }
 
   Future<ApiResponse> updateConfig(
-    String id,
+    String key,
     List<ConfigObject> configs,
   ) async {
     try {
       final String url = '${BaseAPIService.BASE_URL}/configo/config';
-      final data = UpdateConfigRequest(id: id, configs: configs).toJson();
+      final data = UpdateConfigRequest(key: key, configs: configs).toJson();
 
       final response = await _dio.post(url, data: json.encode(data));
 
