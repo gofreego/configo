@@ -120,8 +120,25 @@ class ConfigFormWidgetState extends State<ConfigFormWidget> {
     );
   }
 
+
+  double getFieldWidth(double maxWidth, ConfigType type) {
+    switch (type) {
+      case ConfigType.bigText:
+        return maxWidth > 400 ? 600 : maxWidth * 0.9;
+      case ConfigType.json:
+        return maxWidth > 400 ? 600 : maxWidth * 0.9;
+      case ConfigType.boolean:
+        return 200;
+      case ConfigType.number:
+        return 200; 
+      default:
+        return maxWidth > 400 ? 400 : maxWidth * 0.9;
+    }
+  }
+
+
   Widget _buildInputField(ConfigObject config, double maxWidth) {
-    double fieldWidth = maxWidth > 400 ? 400 : maxWidth * 0.9;
+    double fieldWidth = getFieldWidth(maxWidth, config.type);
     return SizedBox(
       width: fieldWidth,
       child: Column(
