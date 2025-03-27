@@ -3,19 +3,19 @@ package models
 import "github.com/gofreego/goutils/customerrors"
 
 type UpdateConfigRequest struct {
-	Id        string         `json:"id"`
-	Value     []ConfigObject `json:"configs"`
+	Id        string         `json:"key"`
+	Configs   []ConfigObject `json:"configs"`
 	UpdatedBy string         `json:"-"`
 }
 
 func (req *UpdateConfigRequest) Validate() error {
 	if req.Id == "" {
-		return customerrors.BAD_REQUEST_ERROR("id is required")
+		return customerrors.BAD_REQUEST_ERROR("key is required")
 	}
-	if len(req.Value) == 0 {
-		return customerrors.BAD_REQUEST_ERROR("value is required")
+	if len(req.Configs) == 0 {
+		return customerrors.BAD_REQUEST_ERROR("configs are required")
 	}
-	for _, config := range req.Value {
+	for _, config := range req.Configs {
 		err := config.Validate()
 		if err != nil {
 			return err
@@ -25,7 +25,11 @@ func (req *UpdateConfigRequest) Validate() error {
 }
 
 type GetConfigResponse struct {
-	Configs []ConfigObject `json:"configs"`
+	Key       string         `json:"key"`
+	Configs   []ConfigObject `json:"configs"`
+	UpdatedBy string         `json:"updatedBy"`
+	UpdatedAt int64          `json:"updatedAt"`
+	CreatedAt int64          `json:"createdAt"`
 }
 
 type ServiceInfo struct {

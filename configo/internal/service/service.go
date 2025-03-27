@@ -78,7 +78,7 @@ func (manager *Service) UpdateConfig(ctx context.Context, req *models.UpdateConf
 
 	config.UpdatedAt = time.Now().UnixMilli()
 	config.UpdatedBy = req.UpdatedBy
-	bytes, err := json.Marshal(req.Value)
+	bytes, err := json.Marshal(req.Configs)
 	if err != nil {
 		logger.Error(ctx, "failed to marshal config: %v", err)
 		return errors.ErrInvalidConfig
@@ -115,7 +115,13 @@ func (manager *Service) GetConfigByKey(ctx context.Context, key string) (*models
 		return nil, errors.ErrInvalidConfig
 	}
 
-	return &models.GetConfigResponse{Configs: obj}, nil
+	return &models.GetConfigResponse{
+		Key:       config.Key,
+		Configs:   obj,
+		UpdatedBy: config.UpdatedBy,
+		UpdatedAt: config.UpdatedAt,
+		CreatedAt: config.CreatedAt,
+	}, nil
 }
 
 func (manager *Service) GetConfigsMetadata(_ context.Context) (*models.ConfigMetadataResponse, error) {
