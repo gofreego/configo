@@ -79,7 +79,8 @@ type KYCConfig struct {
 }
 
 type InvoiceConfig struct {
-	IsInvoiceEnabled bool `name:"isInvoiceEnabled" type:"boolean" description:"Is Invoice enabled" required:"true"`
+	Name             string `name:"name" type:"string" description:"Name of the invoice" required:"true"`
+	IsInvoiceEnabled bool   `name:"isInvoiceEnabled" type:"boolean" description:"Is Invoice enabled" required:"true"`
 }
 
 type ServiceConfig struct {

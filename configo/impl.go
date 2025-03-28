@@ -40,7 +40,8 @@ func newConfigManagerImpl(ctx context.Context, cfg *configs.ConfigManagerConfig,
 }
 
 // RegisterConfig will register config and setup a UI for it. It will also validate the config.
-func (manager *configManagerImpl) RegisterConfig(ctx context.Context, cfg any) error {
+// if the notifyFunc is provided, it will be called after the config is changed.
+func (manager *configManagerImpl) RegisterConfig(ctx context.Context, cfg any, notifyFunc ...service.Notify) error {
 	// validate config
 	cfgStr, err := parser.Marshal(ctx, cfg)
 	if err != nil {
@@ -73,7 +74,7 @@ func (manager *configManagerImpl) RegisterConfig(ctx context.Context, cfg any) e
 		}
 	}
 
-	manager.service.AddConfigToMap(ctx, cfg)
+	manager.service.AddConfigToMap(ctx, service.NewConfigDetails(configName, cfg, notifyFunc...))
 	// save the config in manager
 	return nil
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/gofreego/configo/configo/configs"
 	"github.com/gofreego/configo/configo/internal/repository"
+	"github.com/gofreego/configo/configo/internal/service"
 )
 
 // RouteRegistrar defines a generic function type for registering routes.
@@ -14,7 +15,8 @@ type RouteRegistrar func(method, path string, handler http.HandlerFunc) error
 
 type ConfigManager interface {
 	// It will register the config in manager, it will save the config in repo if not already present with default values.
-	RegisterConfig(ctx context.Context, cfg any) error
+	// if notifyFunc is provided, it will be called after the config is changed.
+	RegisterConfig(ctx context.Context, cfg any, notifyFunc ...service.Notify) error
 	// RegisterRoute will register the necesory endpoints for the configuration manager. using the provided RouteRegistrar.
 	RegisterRoute(ctx context.Context, registerFunc RouteRegistrar) error
 }

@@ -10,7 +10,6 @@ import (
 	"github.com/gofreego/configo/configo/internal/models"
 	"github.com/gofreego/configo/configo/internal/parser"
 	"github.com/gofreego/configo/configo/internal/repository"
-	"github.com/gofreego/configo/configo/internal/utils"
 	"github.com/gofreego/goutils/logger"
 )
 
@@ -18,8 +17,6 @@ const (
 	// DefaultConfigRefreshInSecs is the default time in seconds after which the config manager will refresh the configs.
 	DefaultConfigRefreshInSecs = 10
 )
-
-type registeredConfigsMap map[string]any
 
 type Service struct {
 	repository        repository.Repository
@@ -37,30 +34,6 @@ func NewService(ctx context.Context, cfg *configs.ConfigManagerConfig, repo repo
 	s := &Service{repository: repo, config: cfg, registeredConfigs: make(registeredConfigsMap)}
 	go s.refreshConfigs(ctx)
 	return s, nil
-}
-
-func (manager *Service) refreshConfigs(ctx context.Context) {
-	for {
-		if manager.config.ConfigRefreshInSecs == 0 {
-			manager.config.ConfigRefreshInSecs = DefaultConfigRefreshInSecs
-		}
-		logger.Debug(ctx, "refreshing configs after %v seconds", manager.config.ConfigRefreshInSecs)
-		time.Sleep(time.Duration(manager.config.ConfigRefreshInSecs) * time.Second)
-		for key, cfg := range manager.registeredConfigs {
-			value, err := manager.repository.GetConfig(ctx, key)
-			if err != nil {
-				continue
-			}
-			if value == nil {
-				continue
-			}
-			err = parser.Unmarshal(ctx, value.Value, cfg)
-			if err != nil {
-				continue
-			}
-		}
-	}
-
 }
 
 func (manager *Service) UpdateConfig(ctx context.Context, req *models.UpdateConfigRequest) error {
@@ -140,7 +113,6 @@ func (manager *Service) GetConfigsMetadata(_ context.Context) (*models.ConfigMet
 	}, nil
 }
 
-func (manager *Service) AddConfigToMap(_ context.Context, cfg any) {
-	configName := utils.GetNameOfTheObject(cfg)
-	manager.registeredConfigs[configName] = cfg
+func (manager *Service) AddConfigToMap(_ context.Context, configDetails *ConfigDetails) {
+	manager.registeredConfigs[configDetails.Key] = configDetails
 }
