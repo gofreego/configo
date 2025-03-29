@@ -9,7 +9,7 @@ import (
 	"github.com/gofreego/configo/configo/internal/errors"
 	"github.com/gofreego/configo/configo/internal/models"
 	"github.com/gofreego/configo/configo/internal/parser"
-	"github.com/gofreego/configo/configo/internal/repository"
+	"github.com/gofreego/configo/configo/repository"
 	"github.com/gofreego/goutils/logger"
 )
 

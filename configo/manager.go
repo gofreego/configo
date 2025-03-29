@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gofreego/configo/configo/configs"
-	"github.com/gofreego/configo/configo/internal/repository"
 	"github.com/gofreego/configo/configo/internal/service"
+	"github.com/gofreego/configo/configo/repository"
 )
 
 // RouteRegistrar defines a generic function type for registering routes.

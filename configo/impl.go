@@ -8,10 +8,10 @@ import (
 	"github.com/gofreego/configo/configo/configs"
 	"github.com/gofreego/configo/configo/internal/handlers"
 	"github.com/gofreego/configo/configo/internal/parser"
-	"github.com/gofreego/configo/configo/internal/repository"
 	"github.com/gofreego/configo/configo/internal/service"
 	"github.com/gofreego/configo/configo/internal/utils"
 	"github.com/gofreego/configo/configo/models"
+	"github.com/gofreego/configo/configo/repository"
 )
 
 type configManagerImpl struct {
