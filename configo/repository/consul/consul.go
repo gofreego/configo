@@ -11,7 +11,6 @@ import (
 
 type Config struct {
 	Host       string
-	Port       int
 	Datacenter string
 	Token      string
 	Prefix     string
@@ -25,7 +24,7 @@ type Repository struct {
 func NewRepository(cfg *Config) (*Repository, error) {
 	// Configure Consul client
 	config := api.DefaultConfig()
-	config.Address = fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
+	config.Address = cfg.Host
 	config.Datacenter = cfg.Datacenter
 
 	if cfg.Token != "" {
