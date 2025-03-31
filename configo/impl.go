@@ -84,27 +84,27 @@ func (manager *configManagerImpl) RegisterConfig(ctx context.Context, cfg any, n
 func (c *configManagerImpl) RegisterRoute(ctx context.Context, registerFunc RouteRegistrar) error {
 
 	//setup swagger
-	if err := registerFunc(http.MethodGet, "/configo/swagger/*any", c.handler.Swagger); err != nil {
+	if err := registerFunc(http.MethodGet, "/configo/v1/swagger/*any", c.handler.Swagger); err != nil {
 		return err
 	}
 
 	// setup ui
-	if err := registerFunc(http.MethodGet, "/configo/web/*any", c.handler.UI); err != nil {
+	if err := registerFunc(http.MethodGet, "/configo/v1/web/*any", c.handler.UI); err != nil {
 		return err
 	}
 
 	// setup get config
-	if err := registerFunc(http.MethodGet, "/configo/config", c.handler.GetConfig); err != nil {
+	if err := registerFunc(http.MethodGet, "/configo/v1/config", c.handler.GetConfig); err != nil {
 		return err
 	}
 
 	//setup save config
-	if err := registerFunc(http.MethodPost, "/configo/config", c.handler.SaveConfig); err != nil {
+	if err := registerFunc(http.MethodPost, "/configo/v1/config", c.handler.SaveConfig); err != nil {
 		return err
 	}
 
 	// setup get all configs
-	if err := registerFunc(http.MethodGet, "/configo/metadata", c.handler.GetConfigMetadata); err != nil {
+	if err := registerFunc(http.MethodGet, "/configo/v1/metadata", c.handler.GetConfigMetadata); err != nil {
 		return err
 	}
 

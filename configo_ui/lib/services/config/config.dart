@@ -25,7 +25,7 @@ class ConfigService extends BaseAPIService {
 
   Future<ApiResponse<ConfigMetadataResponse>> getConfigMetadata() async {
     try {
-      final String url = '${BaseAPIService.BASE_URL}/configo/metadata';
+      final String url = '${BaseAPIService.BASE_URL}/configo/v1/metadata';
       final response = await _dio.get(url);
       return ApiResponse.fromSuccessJson(
         json.decode(response.data),
@@ -38,7 +38,7 @@ class ConfigService extends BaseAPIService {
 
   Future<ApiResponse<GetConfigResponse>> getConfig(String key) async {
     try {
-      final String url = '${BaseAPIService.BASE_URL}/configo/config?key=$key';
+      final String url = '${BaseAPIService.BASE_URL}/configo/v1/config?key=$key';
       final response = await _dio.get(url);
 
       return ApiResponse.fromSuccessJson(
@@ -55,7 +55,7 @@ class ConfigService extends BaseAPIService {
     List<ConfigObject> configs,
   ) async {
     try {
-      final String url = '${BaseAPIService.BASE_URL}/configo/config';
+      final String url = '${BaseAPIService.BASE_URL}/configo/v1/config';
       final data = UpdateConfigRequest(key: key, configs: configs).toJson();
 
       final response = await _dio.post(url, data: json.encode(data));
