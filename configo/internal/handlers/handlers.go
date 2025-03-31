@@ -40,7 +40,7 @@ func (c *Handler) Swagger(w http.ResponseWriter, r *http.Request) {
 // @Router /configo/web/ [get]
 func (c *Handler) UI(w http.ResponseWriter, r *http.Request) {
 	// Ensure the path is correct (handle root path and default file)
-	path := strings.Split(r.URL.Path, "/configo/v1/web/")
+	path := strings.Split(r.URL.Path, "/configo/v1/web")
 	if len(path) < 2 {
 		http.NotFound(w, r)
 		return
