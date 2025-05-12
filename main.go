@@ -25,16 +25,6 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-func getRegistar(router gin.IRouter) configo.RouteRegistrar {
-	return func(method, path string, handler http.HandlerFunc) error {
-		ginHandler := func(c *gin.Context) {
-			handler(c.Writer, c.Request)
-		}
-		router.Handle(method, path, ginHandler)
-		return nil
-	}
-}
-
 type States struct {
 	States map[string]string `json:"states"`
 }
@@ -76,7 +66,7 @@ func main() {
 		ServiceName:         "Test Service",
 		ServiceDescription:  "The Test Service is a scalable and modular system designed to facilitate automated and manual testing processes across different domains. It enables developers, QA engineers, and businesses to validate functionality, performance, security, and reliability of software applications, APIs, or user knowledge in an examination environment. The service provides a structured approach to defining, executing, and reporting tests, ensuring high quality and accuracy in results.",
 		ConfigRefreshInSecs: 10,
-	}, repo)
+	}, repo, "/myservice")
 	if err != nil {
 		panic(err)
 	}
@@ -121,12 +111,11 @@ func main() {
 		c.Next()
 	})
 	group := router.Group("/myservice")
-	err = configo.RegisterRoute(ctx, getRegistar(group))
-	if err != nil {
-		panic(err)
-	}
-
-	logger.Info(ctx, "Swagger UI served at http://localhost:8085/myservice/configo/swagger/index.html")
+	group.Handle(http.MethodGet, "/configo/*any", func(ctx *gin.Context) {
+		logger.Info(ctx, "Request received for configo")
+		configo.ServeHTTP(ctx.Writer, ctx.Request)
+	})
+	logger.Info(ctx, "Swagger UI served at http://localhost:8085/myservice/configo/v1/swagger/index.html")
 	logger.Info(ctx, "Starting server on port 8085")
 	router.Run(":8085")
 }
