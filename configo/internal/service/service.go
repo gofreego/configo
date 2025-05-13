@@ -38,12 +38,12 @@ func NewService(ctx context.Context, cfg *configs.ConfigManagerConfig, repo repo
 
 func (manager *Service) UpdateConfig(ctx context.Context, req *models.UpdateConfigRequest) error {
 
-	if manager.registeredConfigs[req.Id] == nil {
-		logger.Error(ctx, "config not registered: %v", req.Id)
+	if manager.registeredConfigs[req.Key] == nil {
+		logger.Error(ctx, "config not registered: %v", req.Key)
 		return errors.ErrConfigNotFound
 	}
 
-	config, err := manager.repository.GetConfig(ctx, req.Id)
+	config, err := manager.repository.GetConfig(ctx, req.Key)
 	if err != nil {
 		logger.Error(ctx, "failed to get config: %v", err)
 		return errors.NewInternalServerErr("failed to get config, Err: %v", err)
@@ -62,12 +62,12 @@ func (manager *Service) UpdateConfig(ctx context.Context, req *models.UpdateConf
 		logger.Error(ctx, "failed to save config: %v", err)
 		return errors.NewInternalServerErr("failed to save config, Err: %v", err)
 	}
-	err = parser.Unmarshal(ctx, config.Value, manager.registeredConfigs[req.Id])
+	err = parser.Unmarshal(ctx, config.Value, manager.registeredConfigs[req.Key])
 	if err != nil {
 		logger.Error(ctx, "failed to unmarshal config: %v", err)
 		return errors.ErrInvalidConfig
 	}
-	logger.Info(ctx, "config updated successfully: %v", req.Id)
+	logger.Info(ctx, "config updated successfully: %v", req.Key)
 	return nil
 }
 

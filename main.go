@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -111,7 +110,7 @@ func main() {
 		c.Next()
 	})
 	group := router.Group("/myservice")
-	group.Handle(http.MethodGet, "/configo/*any", func(ctx *gin.Context) {
+	group.Any("/configo/*any", func(ctx *gin.Context) {
 		logger.Info(ctx, "Request received for configo")
 		configo.ServeHTTP(ctx.Writer, ctx.Request)
 	})

@@ -24,7 +24,7 @@ class _ConfigFormState extends State<ConfigForm> {
     var res = await ConfigService().getConfig(widget.configKey);
     setState(() {
       isLoading = false;
-      configs = res.data!.configs ?? [];
+      configs = res.data?.configs ?? [];
       error = res.error;
     });
   }

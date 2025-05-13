@@ -13,7 +13,6 @@ import (
 	"github.com/gofreego/configo/configo/internal/utils"
 	"github.com/gofreego/configo/configo/models"
 	"github.com/gofreego/configo/configo/repository"
-	"github.com/gofreego/goutils/logger"
 )
 
 type configManagerImpl struct {
@@ -92,9 +91,7 @@ func (c *configManagerImpl) registerRoutes(ctx context.Context, pathPrefix ...st
 		pathPrefixStr = pathPrefix[0]
 	}
 	group := c.mux.Group(pathPrefixStr + "/configo/v1")
-	group.GET("/swagger", c.handler.Swagger)
 	group.GET("/swagger/*any", c.handler.Swagger)
-	group.GET("/web", c.handler.UI)
 	group.GET("/web/*any", c.handler.UI)
 	group.GET("/config", c.handler.GetConfig)
 	group.POST("/config", c.handler.SaveConfig)
@@ -103,6 +100,5 @@ func (c *configManagerImpl) registerRoutes(ctx context.Context, pathPrefix ...st
 }
 
 func (c *configManagerImpl) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	logger.Info(context.Background(), "Request received for configo: %s", r.URL.Path)
 	c.mux.ServeHTTP(w, r)
 }

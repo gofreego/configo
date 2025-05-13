@@ -39,7 +39,7 @@ func (c *Handler) Swagger(ctx *gin.Context) {
 // @Produce html
 // @Success 200 {string} string "UI"
 // @Failure 400 {object} any
-// @Router /configo/web/ [get]
+// @Router /configo/v1/web/ [get]
 func (c *Handler) UI(ctx *gin.Context) {
 	// Ensure the path is correct (handle root path and default file)
 	path := strings.Split(ctx.Request.URL.Path, "/configo/v1/web")
@@ -47,13 +47,10 @@ func (c *Handler) UI(ctx *gin.Context) {
 		http.NotFound(ctx.Writer, ctx.Request)
 		return
 	}
-	endpoint := path[0] + "/configo/v1/web/"
 	filePath := path[1]
 	if filePath == "" || filePath == "/" {
 		filePath = "/index.html"
 	}
-	logger.Debug(ctx, "UI file path: %s ", filePath)
-	logger.Debug(ctx, "UI endpoint: %s", endpoint)
 	// Open the requested file from embedded FS
 	data, err := ui.GetStatic().ReadFile("static" + filePath)
 	if err != nil {
@@ -61,6 +58,7 @@ func (c *Handler) UI(ctx *gin.Context) {
 		return
 	}
 	if filePath == "/index.html" {
+		endpoint := path[0] + "/configo/v1/web/"
 		data = []byte(strings.Replace(string(data), `<base href="/">`, fmt.Sprintf(`<base href="%s">`, endpoint), 1))
 	}
 	// Determine content type and serve the file
@@ -70,18 +68,18 @@ func (c *Handler) UI(ctx *gin.Context) {
 
 // Swagger doc
 // @Summary Get config
-// @Description Get config by id
+// @Description Get config by key
 // @Tags Config
 // @Accept json
 // @Produce json
-// @Param id query string true "config id"
-// @Success 200 {object} GetConfigResponse
+// @Param key query string true "config key"
+// @Success 200 {object} models.GetConfigResponse
 // @Failure 400 {object} any
-// @Router /configo/config [get]
+// @Router /configo/v1/config [get]
 func (c *Handler) GetConfig(ctx *gin.Context) {
 	key := ctx.Query("key")
 	if key == "" {
-		response.WriteError(ctx, customerrors.BAD_REQUEST_ERROR("id is required in query params"))
+		response.WriteError(ctx, customerrors.BAD_REQUEST_ERROR("key is required in query params"))
 		return
 	}
 	res, err := c.service.GetConfigByKey(ctx, key)
@@ -98,10 +96,10 @@ func (c *Handler) GetConfig(ctx *gin.Context) {
 // @Tags Config
 // @Accept json
 // @Produce json
-// @Param config body UpdateConfigRequest true "config object"
+// @Param config body models.UpdateConfigRequest true "config object"
 // @Success 200 {string} string "config saved successfully"
 // @Failure 400 {object} any
-// @Router /configo/config [post]
+// @Router /configo/v1/config [post]
 func (c *Handler) SaveConfig(ctx *gin.Context) {
 	var cfgUpdateRequest models.UpdateConfigRequest
 	err := ctx.BindJSON(&cfgUpdateRequest)
@@ -130,9 +128,9 @@ func (c *Handler) SaveConfig(ctx *gin.Context) {
 // @Tags Config
 // @Accept json
 // @Produce json
-// @Success 200 {object} configMetadataResponse
+// @Success 200 {object} models.ConfigMetadataResponse
 // @Failure 400 {object} any
-// @Router /configo/metadata [get]
+// @Router /configo/v1/metadata [get]
 func (c *Handler) GetConfigMetadata(ctx *gin.Context) {
 	metadata, err := c.service.GetConfigsMetadata(ctx)
 	if err != nil {

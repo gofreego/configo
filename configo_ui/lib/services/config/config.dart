@@ -28,7 +28,7 @@ class ConfigService extends BaseAPIService {
       final String url = '${BaseAPIService.BASE_URL}/configo/v1/metadata';
       final response = await _dio.get(url);
       return ApiResponse.fromSuccessJson(
-        json.decode(response.data),
+        response.data,
         ConfigMetadataResponse.fromJson,
       );
     } catch (e) {
@@ -42,7 +42,7 @@ class ConfigService extends BaseAPIService {
       final response = await _dio.get(url);
 
       return ApiResponse.fromSuccessJson(
-        json.decode(response.data),
+       response.data,
         GetConfigResponse.fromJson,
       );
     } catch (e) {
@@ -58,9 +58,9 @@ class ConfigService extends BaseAPIService {
       final String url = '${BaseAPIService.BASE_URL}/configo/v1/config';
       final data = UpdateConfigRequest(key: key, configs: configs).toJson();
 
-      final response = await _dio.post(url, data: json.encode(data));
+      final response = await _dio.post(url, data: data);
 
-      return ApiResponse.fromMessageJson(json.decode(response.data));
+      return ApiResponse.fromMessageJson(response.data);
     } catch (e) {
       return ApiResponse.fromDioException(e);
     }

@@ -1,38 +1,11 @@
 definitions:
-  configo.ConfigInfo:
-    properties:
-      configKeys:
-        items:
-          type: string
-        type: array
-    type: object
-  configo.ConfigObject:
-    properties:
-      children:
-        items:
-          $ref: '#/definitions/configo.ConfigObject'
-        type: array
-      choices:
-        items:
-          type: string
-        type: array
-      description:
-        type: string
-      name:
-        type: string
-      required:
-        type: boolean
-      type:
-        $ref: '#/definitions/configo.ConfigType'
-      value: {}
-    type: object
-  configo.ConfigType:
+  constants.ConfigType:
     enum:
     - string
     - number
     - boolean
     - json
-    - big_text
+    - bigText
     - choice
     - parent
     - list
@@ -46,35 +19,70 @@ definitions:
     - CONFIG_TYPE_CHOICE
     - CONFIG_TYPE_PARENT
     - CONFIG_TYPE_LIST
-  configo.GetConfigResponse:
+  models.ConfigInfo:
+    properties:
+      configKeys:
+        items:
+          type: string
+        type: array
+    type: object
+  models.ConfigMetadataResponse:
+    properties:
+      configInfo:
+        $ref: '#/definitions/models.ConfigInfo'
+      serviceInfo:
+        $ref: '#/definitions/models.ServiceInfo'
+    type: object
+  models.ConfigObject:
+    properties:
+      children:
+        items:
+          $ref: '#/definitions/models.ConfigObject'
+        type: array
+      choices:
+        items:
+          type: string
+        type: array
+      description:
+        type: string
+      name:
+        type: string
+      required:
+        type: boolean
+      type:
+        $ref: '#/definitions/constants.ConfigType'
+      value: {}
+    type: object
+  models.GetConfigResponse:
     properties:
       configs:
         items:
-          $ref: '#/definitions/configo.ConfigObject'
+          $ref: '#/definitions/models.ConfigObject'
         type: array
+      createdAt:
+        type: integer
+      key:
+        type: string
+      updatedAt:
+        type: integer
+      updatedBy:
+        type: string
     type: object
-  configo.ServiceInfo:
+  models.ServiceInfo:
     properties:
       description:
         type: string
       name:
         type: string
     type: object
-  configo.UpdateConfigRequest:
+  models.UpdateConfigRequest:
     properties:
       configs:
         items:
-          $ref: '#/definitions/configo.ConfigObject'
+          $ref: '#/definitions/models.ConfigObject'
         type: array
-      id:
+      key:
         type: string
-    type: object
-  configo.configMetadataResponse:
-    properties:
-      configInfo:
-        $ref: '#/definitions/configo.ConfigInfo'
-      serviceInfo:
-        $ref: '#/definitions/configo.ServiceInfo'
     type: object
 info:
   contact:
@@ -89,15 +97,15 @@ info:
   title: Config Manager APIs
   version: "1.0"
 paths:
-  /configo/config:
+  /configo/v1/config:
     get:
       consumes:
       - application/json
-      description: Get config by id
+      description: Get config by key
       parameters:
-      - description: config id
+      - description: config key
         in: query
-        name: id
+        name: key
         required: true
         type: string
       produces:
@@ -106,7 +114,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/configo.GetConfigResponse'
+            $ref: '#/definitions/models.GetConfigResponse'
         "400":
           description: Bad Request
           schema: {}
@@ -123,7 +131,7 @@ paths:
         name: config
         required: true
         schema:
-          $ref: '#/definitions/configo.UpdateConfigRequest'
+          $ref: '#/definitions/models.UpdateConfigRequest'
       produces:
       - application/json
       responses:
@@ -137,7 +145,7 @@ paths:
       summary: Save config
       tags:
       - Config
-  /configo/metadata:
+  /configo/v1/metadata:
     get:
       consumes:
       - application/json
@@ -148,14 +156,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/configo.configMetadataResponse'
+            $ref: '#/definitions/models.ConfigMetadataResponse'
         "400":
           description: Bad Request
           schema: {}
       summary: Get all config keys
       tags:
       - Config
-  /configo/web/:
+  /configo/v1/web/:
     get:
       consumes:
       - application/json

@@ -3,13 +3,13 @@ package models
 import "github.com/gofreego/goutils/customerrors"
 
 type UpdateConfigRequest struct {
-	Id        string         `json:"key"`
+	Key       string         `json:"key"`
 	Configs   []ConfigObject `json:"configs"`
 	UpdatedBy string         `json:"-"`
 }
 
 func (req *UpdateConfigRequest) Validate() error {
-	if req.Id == "" {
+	if req.Key == "" {
 		return customerrors.BAD_REQUEST_ERROR("key is required")
 	}
 	if len(req.Configs) == 0 {

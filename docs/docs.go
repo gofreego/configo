@@ -24,9 +24,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/configo/config": {
+        "/configo/v1/config": {
             "get": {
-                "description": "Get config by id",
+                "description": "Get config by key",
                 "consumes": [
                     "application/json"
                 ],
@@ -40,8 +40,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "config id",
-                        "name": "id",
+                        "description": "config key",
+                        "name": "key",
                         "in": "query",
                         "required": true
                     }
@@ -50,7 +50,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/configo.GetConfigResponse"
+                            "$ref": "#/definitions/models.GetConfigResponse"
                         }
                     },
                     "400": {
@@ -78,7 +78,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/configo.UpdateConfigRequest"
+                            "$ref": "#/definitions/models.UpdateConfigRequest"
                         }
                     }
                 ],
@@ -96,7 +96,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/configo/metadata": {
+        "/configo/v1/metadata": {
             "get": {
                 "description": "Get all config keys",
                 "consumes": [
@@ -113,7 +113,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/configo.configMetadataResponse"
+                            "$ref": "#/definitions/models.ConfigMetadataResponse"
                         }
                     },
                     "400": {
@@ -123,7 +123,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/configo/web/": {
+        "/configo/v1/web/": {
             "get": {
                 "description": "UI",
                 "consumes": [
@@ -152,7 +152,30 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "configo.ConfigInfo": {
+        "constants.ConfigType": {
+            "type": "string",
+            "enum": [
+                "string",
+                "number",
+                "boolean",
+                "json",
+                "bigText",
+                "choice",
+                "parent",
+                "list"
+            ],
+            "x-enum-varnames": [
+                "CONFIG_TYPE_STRING",
+                "CONFIG_TYPE_NUMBER",
+                "CONFIG_TYPE_BOOLEAN",
+                "CONFIG_TYPE_JSON",
+                "CONFIG_TYPE_BIG_TEXT",
+                "CONFIG_TYPE_CHOICE",
+                "CONFIG_TYPE_PARENT",
+                "CONFIG_TYPE_LIST"
+            ]
+        },
+        "models.ConfigInfo": {
             "type": "object",
             "properties": {
                 "configKeys": {
@@ -163,13 +186,24 @@ const docTemplate = `{
                 }
             }
         },
-        "configo.ConfigObject": {
+        "models.ConfigMetadataResponse": {
+            "type": "object",
+            "properties": {
+                "configInfo": {
+                    "$ref": "#/definitions/models.ConfigInfo"
+                },
+                "serviceInfo": {
+                    "$ref": "#/definitions/models.ServiceInfo"
+                }
+            }
+        },
+        "models.ConfigObject": {
             "type": "object",
             "properties": {
                 "children": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/configo.ConfigObject"
+                        "$ref": "#/definitions/models.ConfigObject"
                     }
                 },
                 "choices": {
@@ -188,46 +222,35 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "type": {
-                    "$ref": "#/definitions/configo.ConfigType"
+                    "$ref": "#/definitions/constants.ConfigType"
                 },
                 "value": {}
             }
         },
-        "configo.ConfigType": {
-            "type": "string",
-            "enum": [
-                "string",
-                "number",
-                "boolean",
-                "json",
-                "big_text",
-                "choice",
-                "parent",
-                "list"
-            ],
-            "x-enum-varnames": [
-                "CONFIG_TYPE_STRING",
-                "CONFIG_TYPE_NUMBER",
-                "CONFIG_TYPE_BOOLEAN",
-                "CONFIG_TYPE_JSON",
-                "CONFIG_TYPE_BIG_TEXT",
-                "CONFIG_TYPE_CHOICE",
-                "CONFIG_TYPE_PARENT",
-                "CONFIG_TYPE_LIST"
-            ]
-        },
-        "configo.GetConfigResponse": {
+        "models.GetConfigResponse": {
             "type": "object",
             "properties": {
                 "configs": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/configo.ConfigObject"
+                        "$ref": "#/definitions/models.ConfigObject"
                     }
+                },
+                "createdAt": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "integer"
+                },
+                "updatedBy": {
+                    "type": "string"
                 }
             }
         },
-        "configo.ServiceInfo": {
+        "models.ServiceInfo": {
             "type": "object",
             "properties": {
                 "description": {
@@ -238,28 +261,17 @@ const docTemplate = `{
                 }
             }
         },
-        "configo.UpdateConfigRequest": {
+        "models.UpdateConfigRequest": {
             "type": "object",
             "properties": {
                 "configs": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/configo.ConfigObject"
+                        "$ref": "#/definitions/models.ConfigObject"
                     }
                 },
-                "id": {
+                "key": {
                     "type": "string"
-                }
-            }
-        },
-        "configo.configMetadataResponse": {
-            "type": "object",
-            "properties": {
-                "configInfo": {
-                    "$ref": "#/definitions/configo.ConfigInfo"
-                },
-                "serviceInfo": {
-                    "$ref": "#/definitions/configo.ServiceInfo"
                 }
             }
         }
