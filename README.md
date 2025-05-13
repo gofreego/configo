@@ -17,12 +17,12 @@ Configo provides a centralized configuration management solution with the follow
 In simple words you just need to create your configuration objects and implement a repository interface to save configs in your favorite storage. It will automatically create a UI to manage that configurations. it will update automatically your registered configs if there is any change.
 
 
-![Configo Logo](assets/example%20screenshot.png)
+![UI Screenshot](assets/example%20screenshot.png)
 
 ## How to use
 
 ### Integration Guide
-Integrating Configo into your Go application is straightforward:
+Integrating Configo into your Go application is straight forward:
 
 #### 1. Create a Repository Implementation
 First, implement the Repository interface for your preferred storage backend:
@@ -100,17 +100,11 @@ router := gin.New()
 group := router.Group("/your-service")
 
 // Register configo routes
-err = configo.RegisterRoute(ctx, func(method, path string, handler http.HandlerFunc) error {
-    ginHandler := func(c *gin.Context) {
-        handler(c.Writer, c.Request)
-    }
-    group.Handle(method, path, ginHandler)
-    return nil
-})
-if err != nil {
-    panic(err)
-}
-
+group.Any("/configo/*any", func(ctx *gin.Context) {
+		logger.Info(ctx, "Request received for configo")
+		configo.ServeHTTP(ctx.Writer, ctx.Request)
+	})
+    
 router.Run(":8085")
 ```
 
