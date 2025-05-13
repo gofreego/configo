@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:configo_ui/models/config/config.dart';
 import 'package:configo_ui/models/config/metadata.dart';
 import 'package:configo_ui/models/config/object.dart';
