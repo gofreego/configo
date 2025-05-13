@@ -7616,7 +7616,7 @@ try{s=A.amy().k(0)
 if(J.pf(s,p)){o=J.aNM(s,p)[0]
 $.az_=o
 return o}}catch(q){r=A.al(q)
-A.yj("Error getting web URL: "+A.p(r))}return $.az_="http://localhost:8085/myservice"},
+A.yj("Error getting web URL: "+A.p(r))}return $.az_=""},
 a1O:function a1O(){},
 zQ:function zQ(a,b,c){this.c=a
 this.d=b
