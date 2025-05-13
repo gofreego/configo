@@ -12,5 +12,5 @@ setup:
 
 doc:
 	@echo "Generating API documentation..."
-	@swag init -g ./cmd/configo/main.go
+	@swag init 
 	@echo "API documentation generated"
