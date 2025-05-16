@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-sdk-go v1.55.6
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-zookeeper/zk v1.0.3
-	github.com/gofreego/goutils v1.0.9-0.20250321203825-c1a77f580b9c
+	github.com/gofreego/goutils v1.2.0
 	github.com/hashicorp/consul/api v1.31.2
 	github.com/hashicorp/vault/api v1.16.0
 	github.com/swaggo/http-swagger v1.3.4
@@ -36,6 +36,7 @@ require (
 	github.com/go-playground/validator/v10 v10.20.0 // indirect
 	github.com/go-redis/redis/v8 v8.11.5 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/gofreego/ds v1.0.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-hclog v1.6.3 // indirect

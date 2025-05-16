@@ -46,6 +46,7 @@ type InvoiceConfig struct {
 type ServiceConfig struct {
 	KYCConfig     KYCConfig     `name:"KycConfig" type:"parent" description:"KYC Configuration"`
 	InvoiceConfig InvoiceConfig `name:"InvoiceConfig" type:"parent" description:"Invoice Configuration"`
+	LoggerConfig  logger.Config `name:"LoggerConfig" type:"parent" description:"Logger Configuration"`
 }
 
 // Key implements configo.config.
@@ -85,12 +86,18 @@ func main() {
 	}()
 
 	var serviceConfig ServiceConfig = ServiceConfig{
+
 		KYCConfig: KYCConfig{
 			IsKYCEnabled: true,
 		},
 		InvoiceConfig: InvoiceConfig{
 			Name:             "Invoice",
 			IsInvoiceEnabled: true,
+		},
+		LoggerConfig: logger.Config{
+			AppName: "Test Service",
+			Build:   "dev",
+			Level:   "debug",
 		},
 	}
 	err = configo.RegisterConfig(ctx, &serviceConfig)
